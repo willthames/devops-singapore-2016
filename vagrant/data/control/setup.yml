@@ -1,0 +1,53 @@
+- hosts: all
+
+  vars:
+    target: 192.168.33.11
+
+  tasks:
+  - name: install prerequisites
+    yum:
+      name: "{{ item }}"
+      state: present
+    with_items:
+    - git
+    - sshpass
+    become: yes
+
+  - name: download workshop resources
+    get_url:
+      url: https://github.com/willthames/devops-singapore-2016/archive/master.tar.gz
+      dest: /home/vagrant/master.tar.gz
+      force: yes
+    register: download_resources
+
+    # Use tar as unarchive module doesn't handle --strip-components=1 correctly
+  - name: extract workshop resources
+    command: tar xzf /home/vagrant/master.tar.gz --strip-components=1 devops-singapore-2016-master/ansible
+    args:
+      warn: no
+    when: download_resources|changed
+
+  - name: install inventory file
+    copy:
+      content: "[web]\n{{ target }} ansible_user=vagrant"
+      dest: /home/vagrant/ansible/inventory/vagrant
+
+  - name: create ephemeral ssh key
+    command: ssh-keygen -f /home/vagrant/.ssh/ansible -N "" -c "ansible"
+    args:
+      creates: /home/vagrant/.ssh/ansible
+
+  - name: install ssh config file
+    template:
+      src: ssh_config.j2
+      dest: /home/vagrant/.ssh/config
+      mode: 0600
+
+  - name: check if ssh access to target works
+    command: ssh {{ target }} echo hello
+    ignore_errors: True
+    register: ssh_target
+
+  - name: copy ssh to target VM
+    command: sshpass -p vagrant ssh-copy-id {{ target }}
+    when: ssh_target|failed

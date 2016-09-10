@@ -35,20 +35,27 @@ OS from https://www.virtualbox.org/wiki/Downloads
 Download and install vagrant for your OS from
 https://www.vagrantup.com/downloads.html
 
+Install the vbguest vagrant plugin:
+```
+vagrant plugin install vagrant-vbguest
+```
+
 #### Download the workshop resources
 
 Download and extract:
-TODO
-
+https://github.com/willthames/devops-singapore-2016/archive/master.zip
 
 #### Create VMs
 
 From the workshop resources directory, run:
 ```
-vagrant up
+vagrant up --provision target
+vagrant up --provision control
+vagrant reload --provision target
 ```
-on the command line.
-
+on the command line. (The order here allows the control
+node to get its ssh key onto the target, before turning
+off password access on the target node again)
 
 #### Check that first VM can control second VM
 

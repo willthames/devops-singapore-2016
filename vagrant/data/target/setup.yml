@@ -1,0 +1,22 @@
+- hosts: all
+
+  tasks:
+  - name: obtain contents of authorized_keys file
+    command: cat /home/vagrant/.ssh/authorized_keys
+    changed_when: False
+    register: cat_authorized_keys
+
+  - name: Set password authentication
+    lineinfile:
+      dest: /etc/ssh/sshd_config
+      regexp: "^PasswordAuthentication"
+      line: "PasswordAuthentication {{ 'no' if 'ansible' in cat_authorized_keys.stdout else 'yes' }}"
+    become: yes
+    notify: reload ssh
+
+  handlers:
+  - name: reload ssh
+    service:
+      name: sshd
+      state: reloaded
+    become: yes
