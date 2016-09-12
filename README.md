@@ -25,20 +25,25 @@ will likely aid memory and allow more interaction.
 This is intended for people who are running windows or who want a simple
 way to create the necessary VMs.
 
-#### Install Virtualbox
+#### Install Virtualbox and vagrant
 
-Download and install Virtualbox for your
-OS from https://www.virtualbox.org/wiki/Downloads
+##### OS X, Windows
+* Download and install Virtualbox for your
+  OS from https://www.virtualbox.org/wiki/Downloads
+* Download and install vagrant from
+  https://www.vagrantup.com/downloads.html
+* Install the vbguest vagrant plugin:
+  ```
+  vagrant plugin install vagrant-vbguest
+  ```
 
-#### Install vagrant
+##### Fedora, Ubuntu etc.
 
-Download and install vagrant for your OS from
-https://www.vagrantup.com/downloads.html
+* Fedora:
+    - http://danilodellaquila.com/en/blog/vagrant-and-virtualbox-installation-on-fedora
+    - http://jantz.cc/configure-fedora-23-firewalld-to-allow-nfs-vagrant/802/
+* Ubuntu: https://www.olindata.com/blog/2014/07/installing-vagrant-and-virtual-box-ubuntu-1404-lts
 
-Install the vbguest vagrant plugin:
-```
-vagrant plugin install vagrant-vbguest
-```
 
 #### Download the workshop resources
 
@@ -49,6 +54,7 @@ https://github.com/willthames/devops-singapore-2016/archive/master.zip
 
 From the workshop resources directory, run:
 ```
+cd vagrant
 vagrant up --provision target
 vagrant up --provision control
 vagrant reload --provision target
