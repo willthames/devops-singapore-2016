@@ -25,6 +25,10 @@ will likely aid memory and allow more interaction.
 This is intended for people who are running windows or who want a simple
 way to create the necessary VMs.
 
+#### Ensure hardware virtualization is enabled:
+
+* http://www.howtogeek.com/213795/how-to-enable-intel-vt-x-in-your-computers-bios-or-uefi-firmware/
+
 #### Install Virtualbox and vagrant
 
 ##### OS X, Windows
@@ -54,7 +58,7 @@ https://github.com/willthames/devops-singapore-2016/archive/master.zip
 #### Create VMs
 
 From the workshop resources directory (on Windows, Shift+Right Click
-in a folder will give you an option to open a command prompt in that
+on a folder will give you an option to open a command prompt in that
 directory), run:
 ```
 cd vagrant
@@ -65,6 +69,8 @@ vagrant reload --provision target
 on the command line. (The order here allows the control
 node to get its ssh key onto the target, before turning
 off password access on the target node again)
+
+##### Troubleshooting
 
 If you see:
 
@@ -85,7 +91,12 @@ you may need to install
 
 #### Check that first VM can control second VM
 
-From the workshop resources directory, run:
+On windows, if you don't already have a command-line ssh client, download and install
+git from https://git-scm.com/downloads. When installing, 
+ensure that the 'Git Bash here' option is ticked. 
+
+From the workshop resources directory (use Shift + Right click to get Git 
+Bash here on the folder in windows), run:
 ```
 vagrant ssh control
 ```
