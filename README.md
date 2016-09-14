@@ -7,6 +7,11 @@ While the workshop should be informative and useful if you
 can't run Ansible on the day, being able to try commands as we go along
 will likely aid memory and allow more interaction.
 
+If the instructions below aren't clear, please raise an
+[Issue](https://github.com/willthames/devops-singapore-2016/issues) 
+(or better still a [Pull Request](https://github.com/willthames/devops-singapore-2016/pulls)) 
+against thse instructions.
+
 ## Requirements
 
 * One control node - this can be your laptop
@@ -25,7 +30,7 @@ will likely aid memory and allow more interaction.
 This is intended for people who are running windows or who want a simple
 way to create the necessary VMs.
 
-#### Ensure hardware virtualization is enabled:
+#### Ensure hardware virtualization is enabled
 
 * http://www.howtogeek.com/213795/how-to-enable-intel-vt-x-in-your-computers-bios-or-uefi-firmware/
 
@@ -47,7 +52,8 @@ way to create the necessary VMs.
 * Fedora:
     - http://danilodellaquila.com/en/blog/vagrant-and-virtualbox-installation-on-fedora
     - http://jantz.cc/configure-fedora-23-firewalld-to-allow-nfs-vagrant/802/
-* Ubuntu: https://www.olindata.com/blog/2014/07/installing-vagrant-and-virtual-box-ubuntu-1404-lts
+* Ubuntu:
+    - https://www.olindata.com/blog/2014/07/installing-vagrant-and-virtual-box-ubuntu-1404-lts
 
 
 #### Download the workshop resources
