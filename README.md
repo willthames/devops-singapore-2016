@@ -120,7 +120,7 @@ On your control node:
 ```
 cd workingdir
 git clone https://github.com/willthames/devops-singapore-2016
-cd devops-singapore-2016
+cd devops-singapore-2016/ansible
 TARGET=_INSERT_IP_ADDRESS_OF_TARGET_HOST_HERE_
 USER=_INSERT_USERNAME_FOR_TARGET_HOST_HERE_
 echo > inventory/target << EOF

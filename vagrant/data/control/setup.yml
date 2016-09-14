@@ -16,13 +16,13 @@
   - name: download workshop resources
     get_url:
       url: https://github.com/willthames/devops-singapore-2016/archive/master.tar.gz
-      dest: /home/vagrant/master.tar.gz
+      dest: /var/tmp/master.tar.gz
       force: yes
     register: download_resources
 
     # Use tar as unarchive module doesn't handle --strip-components=1 correctly
   - name: extract workshop resources
-    command: tar xzf /home/vagrant/master.tar.gz --strip-components=1 devops-singapore-2016-master/ansible
+    command: tar xzf /var/tmp/master.tar.gz --strip-components=2 devops-singapore-2016-master/ansible
     args:
       warn: no
       chdir: /home/vagrant
@@ -31,7 +31,7 @@
   - name: install inventory file
     copy:
       content: "[web]\ntarget ansible_host={{ target }} ansible_user=vagrant"
-      dest: /home/vagrant/ansible/inventory/vagrant
+      dest: /home/vagrant/inventory/vagrant
 
   - name: create ephemeral ssh key
     command: ssh-keygen -f /home/vagrant/.ssh/ansible -N "" -C "ansible"
