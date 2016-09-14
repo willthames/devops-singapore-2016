@@ -37,6 +37,7 @@ way to create the necessary VMs.
   vagrant plugin install vagrant-vbguest
   ```
 
+
 ##### Fedora, Ubuntu etc.
 
 * Fedora:
@@ -52,7 +53,9 @@ https://github.com/willthames/devops-singapore-2016/archive/master.zip
 
 #### Create VMs
 
-From the workshop resources directory, run:
+From the workshop resources directory (on Windows, Shift+Right Click
+in a folder will give you an option to open a command prompt in that
+directory), run:
 ```
 cd vagrant
 vagrant up --provision target
@@ -62,6 +65,23 @@ vagrant reload --provision target
 on the command line. (The order here allows the control
 node to get its ssh key onto the target, before turning
 off password access on the target node again)
+
+If you see:
+
+```
+The box 'centos/7' could not be found or
+could not be accessed in the remote catalog. If this is a private
+box on HashiCorp's Atlas, please verify you're logged in via
+`vagrant login`. Also, please double-check the name. The expanded
+URL and error message are shown below:
+
+URL: ["https://atlas.hashicorp.com/centos/7"]
+Error:
+```
+
+you may need to install
+[Visual C++ runtime](http://www.microsoft.com/en-us/download/details.aspx?id=8328)
+(see https://github.com/mitchellh/vagrant/issues/6754)
 
 #### Check that first VM can control second VM
 
