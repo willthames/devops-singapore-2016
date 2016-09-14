@@ -1,5 +1,5 @@
-DevOpsDays Singapore 2016 Ansible Workshop
-------------------------------------------
+DevOpsDays Singapore 2016 Ansible Workshop Preparation
+------------------------------------------------------
 
 ## Introduction
 
@@ -32,7 +32,11 @@ way to create the necessary VMs.
 
 #### Ensure hardware virtualization is enabled
 
+For Windows/Linux on 64 bit CPUs (32 bit CPUs are not supported in this doc
+at this point, improvement suggestions welcomed)
 * http://www.howtogeek.com/213795/how-to-enable-intel-vt-x-in-your-computers-bios-or-uefi-firmware/
+
+Most Apple Macs have hardware virtualization on by default, so no action should be required.
 
 #### Install Virtualbox and vagrant
 
