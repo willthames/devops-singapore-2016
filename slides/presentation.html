@@ -1,0 +1,121 @@
+<!doctype html>
+<html>
+  <head>
+      <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+      <title>p_slides</title>
+      <link rel="stylesheet" type="text/css" media="screen, projection, print" href="/assets/stylesheets/slidy.css" />
+      <link rel="stylesheet" type="text/css" media="screen" href="/assets/stylesheets/style.css" />
+      <link rel="stylesheet" type="text/css" media="screen, print" href="/assets/stylesheets/twitter_bootstrap.css" />
+      <link rel="stylesheet" type="text/css" media="screen, print" href="/themes/zhaw/zhaw.css" />
+      <script src="/assets/javascripts/jquery-3.1.0.min.js"></script>
+      <script src="/assets/javascripts/remarkable-1.6.2.min.js"></script>
+      <script src="/assets/javascripts/slidy.js"></script>
+      <script src="/assets/javascripts/jquery-syntax/jquery.syntax.min.js"></script>
+
+      <script>
+        // configure theme variables here
+        var default_footer = "Ansible from Zero to Best Practices • October 2016"
+      </script>
+      <script src="/themes/zhaw/zhaw.js"></script>
+  </head>
+  <body>
+
+    <script type="p_slides" class="presentation">
+
+# Ansible From Zero to Best Practices
+
+By Will Thames:
+
+* Senior Systems Engineer, Red Hat Brisbane
+* contributor to Ansible
+* developer of ansible-lint, ansible-review and ansible-inventory-grapher.
+
+---
+
+# About this talk
+
+* Part 1: Introduction to Ansible
+* Part 2: Ansible and variables
+* Part 3: Ansible and roles
+* Part 4: Integrating best practices
+
+---
+# Introduction to Ansible
+
+* What is Ansible
+* Why use Ansible
+* Basic concepts
+* Demo/Lab
+
+---
+# What is Ansible
+
+* Configuration Management and Orchestration
+  tool
+* Repeatably put systems into a desired
+  state
+    - files
+    - packages
+    - services
+    - ...
+
+---
+# Why use Ansible
+
+* Easy to install
+    - control machine needs ssh and python
+    - target machine needs ssh (and preferably python)
+    - no agents other than ssh required
+* No complicated access control
+    - if you can ssh to a target, you can run
+      ansible against it with your privileges
+    - you only get root power if you already
+      have root access
+
+---
+# Why use Ansible
+
+* Easy to do easy things with
+* Not much harder to do hard things with
+* Usually easy for others to understand what
+  is going on
+
+---
+# Things people don't like
+
+* YAML configuration and no more (unlike
+  Chef or Puppet)
+* Doesn't maintain desired state (unlike
+  Puppet)
+
+---
+# Basic Concepts
+
+---
+# Lab
+
+* Hopefully you received and followed the instructions
+  to set up your Ansible environment.
+
+* automatic page numbering works
+* when no explicit footer is given, an implicit footer with information on the
+lecture is inserted
+* printing to pdf works: [zhaw_presentation.pdf](https://github.com/munen/p_slides/raw/themes/zhaw/zhaw_presentation.pdf)
+* printed in chromium, a5, landscape mode
+* printing is also tested in ff
+* it might not work in an older ie, because it wouldn't take the background-colors of the header)
+
+<h2.trivia>
+  Bonkers
+</h2>
+
+
+---
+</script>
+
+<h2.trivia></h2>
+What is 1 + 2, perhaps?
+
+  <script src="/assets/javascripts/p_slides.js"></script>
+  </body>
+</html>
