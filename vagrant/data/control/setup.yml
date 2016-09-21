@@ -11,6 +11,7 @@
     with_items:
     - git
     - sshpass
+    - ansible-lint
     become: yes
 
   - name: download workshop resources
