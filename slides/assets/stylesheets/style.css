@@ -2,15 +2,8 @@
 
 h2, h3 { margin-bottom: 0.8em !important; }
 
-
-/* Inline code can occur on every level of a list and
- * inside p's, thus it should be adapted to the elements
- * font size. twitter_bootstrap.css wants to set a fixed
- * size for code though. Thus we override it here and
- * inherit from the parent.
- */
 body code {
-	font-size: 80%;
+	font-size: 24px;
 }
 
 /* the following concerns code _listings_
@@ -30,5 +23,9 @@ body code {
 	 * level we're in. We want to have constant code listing
 	 * font sizes.
 	 */
-	font-size: 10px;
+	font-size: 100%;
+}
+
+ul li li { 
+  font-style: normal;
 }

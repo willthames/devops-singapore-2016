@@ -1,0 +1,145 @@
+<!doctype html>
+<html>
+  <head>
+      <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+      <title>p_slides</title>
+      <link rel="stylesheet" type="text/css" media="screen, projection, print" href="/assets/stylesheets/slidy.css" />
+      <link rel="stylesheet" type="text/css" media="screen" href="/assets/stylesheets/style.css" />
+      <link rel="stylesheet" type="text/css" media="screen, print" href="/assets/stylesheets/twitter_bootstrap.css" />
+      <link rel="stylesheet" type="text/css" media="screen, print" href="/themes/zhaw/zhaw.css" />
+      <script src="/assets/javascripts/jquery-3.1.0.min.js"></script>
+      <script src="/assets/javascripts/remarkable-1.6.2.min.js"></script>
+      <script src="/assets/javascripts/slidy.js"></script>
+      <script src="/assets/javascripts/jquery-syntax/jquery.syntax.min.js"></script>
+
+      <script>
+        // configure theme variables here
+        var default_footer = "Ansible from Zero to Best Practices • October 2016"
+      </script>
+      <script src="/themes/zhaw/zhaw.js"></script>
+  </head>
+  <body>
+
+    <script type="p_slides" class="presentation">
+
+# Ansible From Zero to Best Practices
+
+---
+
+# Part 3: Roles
+
+---
+
+# Why do we have roles
+
+* Roles are a package of common tasks
+  and templates and variables.
+* Roles are designed for reuse
+* Roles should implement best practices
+  (e.g. our apache and nginx roles make it
+  easy to create secure web sites)
+* If more than one playbook might do
+  something in the same way, that should
+  be abstracted to a role
+
+---
+
+# Where do roles come from
+
+* Ansible Galaxy (https://galaxy.ansible.com/) -
+  e.g. our postgresql and mysql both originate
+  from there
+* `ansible-galaxy init new-role` creates a role
+  skeleton
+* There are currently nearly 100 roles in our gitlab.
+  (See the ansible-roles group)
+
+---
+# Galaxy for roles
+
+- We use Ansible's [Galaxy](http://docs.ansible.com/galaxy.html) functionality for managing internal roles
+- Each role is its own git repo
+- Roles used in production are tagged --- production playbooks must use
+    versioned roles, and production roles must have versions.
+- Contribution workflow is similar to playbooks, but because of the
+  tagging and self-contained nature of roles, only one approval is needed.
+---
+
+# Versioning roles
+
+Best practices
+say that all production roles MUST be versioned, and that all production
+playbooks MUST use versioned roles.
+
+Versioning allows repeatability - if the same playbook with the same rolesfile
+is used in 6 months time, it should work in exactly the same way. This would
+not be the case if a playbook just used the latest versions of the role.
+
+This means we can be less strict with accepting role changes (because changes
+to roles should not affect users of that role).
+
+---
+
+# How we version roles
+
+Once a code review is accepted:
+
+```
+git pull upstream master
+git tag v2.3
+git push upstream v2.3
+```
+---
+
+## How versioned roles are used
+
+In a requirements.yml, a role specification looks like
+
+```
+- src: https://gitlab.example.com/ansible-roles/apache.git
+  scm: git
+  version: v3.6
+```
+
+The role is then installed using:
+
+```
+ansible-galaxy install -r playbooks/application/env/rolesfile.yml \
+  -p playbooks/application/env/roles
+```
+
+
+# Role dependencies
+
+Don't explicitly declare version dependencies in a role's meta/main.yml
+
+The reason for this is that maintaining version consistency across roles and
+playbooks proved to be more effort than we gained. Typical problems included:
+* Role A depends on Role B. If you want to update Role A to a newer version,
+  you need to update Role B's version. And then Role C if that depends on Role
+  B.
+* Role B depends on Role A. Role C depends on Role A. Both specify different
+  versions. Only one of them will win (and no warning will be generated in
+  current `ansible-galaxy` command line tool).
+* A playbook's rolefile includes Role A and Role B. Role B also depends on
+  Role A. Again, if the versions differ, it's not clear which will be used,
+  and no warning will be produced.
+
+# Role dependencies
+
+Role dependencies:
+* Roles updated to change to an empty `dependencies` array should have their
+  major version bumped.
+* Dependencies MUST be documented in the Dependencies section of the README.md
+  that lives in the role's root directory.
+* If the order of dependencies matter, that order MUST be noted.
+* It is then the responsibility of the playbook author to ensure
+  that the dependency is included in the playbook's rolesfile.
+* Environment specific roles (e.g. backups, monitoring for production)
+  can be specified only in the playbook for that environment.
+
+</script>
+
+  <script src="/assets/javascripts/p_slides.js"></script>
+  </body>
+</html>

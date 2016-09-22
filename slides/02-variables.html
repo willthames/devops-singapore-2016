@@ -1,0 +1,204 @@
+<!doctype html>
+<html>
+  <head>
+      <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+      <title>p_slides</title>
+      <link rel="stylesheet" type="text/css" media="screen, projection, print" href="/assets/stylesheets/slidy.css" />
+      <link rel="stylesheet" type="text/css" media="screen" href="/assets/stylesheets/style.css" />
+      <link rel="stylesheet" type="text/css" media="screen, print" href="/assets/stylesheets/twitter_bootstrap.css" />
+      <link rel="stylesheet" type="text/css" media="screen, print" href="/themes/zhaw/zhaw.css" />
+      <script src="/assets/javascripts/jquery-3.1.0.min.js"></script>
+      <script src="/assets/javascripts/remarkable-1.6.2.min.js"></script>
+      <script src="/assets/javascripts/slidy.js"></script>
+      <script src="/assets/javascripts/jquery-syntax/jquery.syntax.min.js"></script>
+
+      <script>
+        // configure theme variables here
+        var default_footer = "Ansible from Zero to Best Practices • October 2016"
+      </script>
+      <script src="/themes/zhaw/zhaw.js"></script>
+  </head>
+  <body>
+
+    <script type="p_slides" class="presentation">
+
+# Ansible From Zero to Best Practices
+
+---
+
+# Part 2: Ansible and variables
+
+---
+# Variables
+
+* In general logic should be the same
+  (or similar) for all environments.
+* Variables fill in the contents of template
+  files, can be used for the source of files,
+  and to choose whether or not to perform a
+  task (to name some reasons)
+* Fewer variations in configuration sources
+  reduces likelihood of errors (Don't Repeat
+  Yourself)
+
+---
+
+# Roles `defaults/main.yml`
+
+
+---
+# Inventory
+
+* Inventory is used to define the hierarchy of hosts and the groups to which
+  they belong.
+* The inventory source can be a file, or a script, or a directory containing
+  such files and scripts.
+* Ansible also sources host variables and group variables from `host_vars`
+  and `group_vars` stored in the inventory directory
+* Inheritance works mostly as you'd expect --- host variables override group
+  variables, and the variables of child groups override their parent
+
+---
+# ansible-inventory-grapher
+
+* Use ansible-inventory-grapher (`pip install ansible-inventory-grapher`) along
+  with graphviz to see inventory hierarchys:
+
+```
+ansible-inventory-grapher -q web-01.example.com | \
+  dot -Tpng | display png:-
+```
+
+
+---
+# Best practices: inventory
+
+* Set `hosts_file` in the ansible configuration
+  file to a directory
+* Each file in that directory can be an independent
+  part of the inventory
+* Inventory scripts can also live in that directory
+* That directory can contain `host_vars` and `group_vars`
+
+---
+# Best practices: host_vars
+
+host_vars can be useful, but should really be
+saved for times when only one host will ever have
+that value.
+
+This means that SSL certificates and keys,
+kerberos keytabs, server uuids etc. might be
+candidates, but most other inventory variables
+will be properties of groups.
+
+---
+# Facts
+
+* Information about a host sourced
+  at runtime, e.g. IP address or OS version.
+
+* You don't need to run the `setup` module
+  directly to gather facts - it is always run
+  in playbook mode, unless `gather_facts` is
+  set.
+
+---
+# `set_fact` module
+
+* The `set_fact` module is used to derive new
+  facts from existing facts to produce more
+  useful ones. 
+
+  ```
+  - name: set OS version fact
+    set_fact:
+    args:
+      os_version: "{{ansible_distribution}}{{ansible_distribution_major_version}}"
+  ```
+
+---
+# Using `set_fact`
+
+* The following will look under the `vars`
+  directory of a role for a file called e.g. `CentOS7.yml`
+  ```
+  - name: include variables based on OS version
+    include_vars: "{{ os_version }}.yml"
+  ```
+
+* The following will look under the `tasks`
+  directory of a role for a file called e.g. `CentOS7.yml`
+
+  ```
+  - name: run tasks based on OS version
+    include: "{{ os_version }}.yml"
+  ```
+
+---
+# `register`ed variables
+
+* `register`ed variables used to store the
+   results of a task in a playbook.
+
+   ```
+   - name: get stat data for file
+     stat:
+       path: /path/to/file
+     register: stat_file
+
+   - name: fail if path doesn't exist
+     fail:
+       msg: "File does not exist"
+     when: not stat_file.stat.exists
+   ```
+
+---
+# `include_vars` and `vars_files``
+
+* Use `include_vars` to include a variables
+  file as a task in a playbook run. You can use
+  `no_log` to ensure vars aren't logged.
+
+* You can also use `vars_files` in a playbook
+  to include one or more variables files.
+  `vars_files` can't be used in a role.
+
+---
+# role `vars/main.yml`
+
+* Use roles vars/main.yml when you want to
+   override another role's defaults.
+
+# extra vars `-e`
+
+* Command line extra vars are useful for
+  setting configuration at run-time.
+* Set lots of variables at once by including
+  a variables file using `-e @filename.yml` -
+  can be useful for overriding defaults during
+  an outage.
+
+---
+# Host variables
+
+* Host variables should be used only for things that will only be true
+  for a single host.  An example of this might be caching of a UUID of
+  a host, or setting kerberos keytabs
+* Variables should not be stored in inventory host files (using [group:vars]
+  or [host:vars] mechanism) - the inventory files should be used for group
+  ontents and hierarchy definitions (using [group:children]).
+  This is to avoid confusion about where variables might be set.
+
+
+# Lab
+
+
+
+---
+</script>
+
+
+  <script src="/assets/javascripts/p_slides.js"></script>
+  </body>
+</html>

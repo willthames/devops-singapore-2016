@@ -1,0 +1,338 @@
+<!doctype html>
+<html>
+  <head>
+      <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+      <title>p_slides</title>
+      <link rel="stylesheet" type="text/css" media="screen, projection, print" href="/assets/stylesheets/slidy.css" />
+      <link rel="stylesheet" type="text/css" media="screen" href="/assets/stylesheets/style.css" />
+      <link rel="stylesheet" type="text/css" media="screen, print" href="/assets/stylesheets/twitter_bootstrap.css" />
+      <link rel="stylesheet" type="text/css" media="screen, print" href="/themes/zhaw/zhaw.css" />
+      <script src="/assets/javascripts/jquery-3.1.0.min.js"></script>
+      <script src="/assets/javascripts/remarkable-1.6.2.min.js"></script>
+      <script src="/assets/javascripts/slidy.js"></script>
+      <script src="/assets/javascripts/jquery-syntax/jquery.syntax.min.js"></script>
+
+      <script>
+        // configure theme variables here
+        var default_footer = "Ansible from Zero to Best Practices • October 2016"
+      </script>
+      <script src="/themes/zhaw/zhaw.js"></script>
+  </head>
+  <body>
+
+    <script type="p_slides" class="presentation">
+
+# Ansible From Zero to Best Practices
+
+By Will Thames:
+
+* Senior Systems Engineer, Red Hat Brisbane
+* contributor to Ansible
+* developer of ansible-lint, ansible-review and ansible-inventory-grapher.
+
+---
+
+# About this talk
+
+* Part 1: Introduction to Ansible
+* Part 2: Ansible and variables
+* Part 3: Ansible and roles
+* Part 4: Integrating best practices
+
+---
+# Introduction to Ansible
+
+* What is Ansible
+* Why use Ansible
+* Basic concepts
+* Demo/Lab
+
+---
+# What is Ansible
+
+* Configuration Management and Orchestration
+  tool
+* Repeatably put systems into a desired
+  state
+    - files
+    - packages
+    - services
+    - ...
+
+---
+# Why use Ansible
+
+* Easy to install
+    - control machine needs ssh and python
+    - target machine needs ssh (and preferably python)
+    - no agents other than ssh required
+* No complicated access control
+    - if you can ssh to a target, you can run
+      ansible against it with your privileges
+    - you only get root power if you already
+      have root access
+
+---
+# Why use Ansible
+
+* Easy to do easy things with
+* Not much harder to do hard things with
+* Usually easy for others to understand what
+  is going on
+
+---
+# Getting up and running with Ansible
+
+* Install Ansible
+  - RHEL/CentOS/Fedora: yum install ansible
+  - OS X: brew install ansible [FIXME: check]
+  - Windows: doesn't install directly - use a VM or cygwin
+  - Most platforms: pip install ansible
+
+---
+# Configuration file
+
+
+
+# Basic Concepts
+
+* Modules
+* Playbooks
+* Variables
+* Templates
+* Inventory
+* Roles
+
+---
+# Modules
+
+* A single module allows the execution of a
+  self-contained task.
+
+* There are modules for an awful lot of things - 
+  e.g. configuring services in AWS, installing OS
+  packages, writing to files, updating network
+  devices, and many others
+
+
+---
+# Example
+
+Using the `ansible` command line, it's easy to
+run a simple module to get all of the facts from a repo
+
+```
+ansible -m setup target
+```
+
+or run an ad-hoc task
+
+```
+ansible -m file -a "state=directory path=~/throwaway" target
+```
+
+---
+# Playbooks
+
+A playbook is, at its simplest, a list of tasks to run in
+sequence against a list of hosts. The `setup` task is
+run first.
+
+```
+- hosts: target
+
+  tasks:
+  - name: ensure ~/throwaway doesn't exist
+    file:
+      path: ~/throwaway
+      state: absent
+```
+
+---
+# Best practices: YAML
+
+Note that the previous task could be written
+
+```
+    file: path=~/throwaway state=absent
+```
+
+Ansible have said that the preferred format is
+the YAML dictionary format, as the key=value
+form can lead to strange errors.
+
+```
+    debug: msg="DEBUG: this is bad"
+```
+
+is not valid YAML, but
+
+```
+    debug:
+      msg: "DEBUG: this is good"
+```
+
+is fine.
+
+---
+# Tasks
+
+All tasks and handlers must have a unique name within a role (as names are
+prefixed with role in the output, we don't need to worry about uniqueness across
+roles). This allows `--start-at-task` to be unambiguous, and also means that
+it's easy to see at what point a playbook failed.
+
+---
+# Check Mode
+
+Ansible can be run in test mode using the `-C` or `--check-mode` flags.
+
+```
+ansible-playbook -C examples/playbook.yml
+```
+
+Because ansible doesn't know if a command will have an effect in
+dry run mode, tasks are skipped by default. You can force them to
+be run using the `check_mode` flag (previously the `always_run` flag)
+
+```
+- name: get version of coreutils rpm
+  command: rpm -q coreutils
+  args:
+    warn: no
+  changed_when: False
+  check_mode: yes
+```
+
+You can also do things differently when in check mode
+by changing behaviour based upon `when: ansible_check_mode`.
+
+---
+# Convergence
+
+  Plays and especially roles should be developed with continuous delivery in
+  mind.  Therefore no play should list any value other than `changed: 0` in the
+  report at the end of the play if no functional changes on the target would
+  occur (e.g. at the end of a second run of the same playbook).
+
+---
+# Command tasks
+
+* In particular, `shell` and `command` will always return `changed: True`. Use
+  of `changed_when: False` when running read-only commands is encouraged
+  to minimise false alarms:
+
+  ```
+    - name: verify certificate issuer for optional CA configuration default
+      command: openssl x509 -in /etc/httpd/conf/ssl.crt -noout -issuer
+      register: crt_verify
+      changed_when: false
+      always_run: true
+  ```
+
+* Other means of reducing the amount of unnecessary changes:
+    - use `creates` or `removes` with commands to prevent an action happening
+      if it's already happened
+    - use `when` with a pre-check read-only task (with `changed_when: False`)
+      to see if an action needs to happen before
+      doing it - e.g.
+
+      ```
+        - name: check tuned profile
+          command: tuned-adm active
+          register: tuned_adm
+          changed_when: False
+
+        - name: set tuned profile
+          command: tuned-adm profile virtual-guest
+          when: "'Current active profile: virtual-guest' not in tuned-adm.stdout"
+      ```
+
+
+---
+# Templates
+
+- Templates allow you to generate configuration files from values set in
+  various inventory properties. This means that you can store one template in
+  source control that applies to many different environments.
+- An example might
+  be a file specifying database connection information that would have the same
+  structure but different values for dev, test and prod environments
+
+```
+db.settings={{dbhost}}:{{dbport}}/{{dbuser}}:{{dbpass}}@{{dbschema}}
+```
+
+Templates are populated using
+
+```
+  - template:
+      src: path/to/template.j2
+      dest: /path/to/result
+```
+
+---
+# Best practice: use directory structure with templates
+
+Because configuration files for an application can end
+up with similar names in different directories, reflect
+the target destination in the source repository
+
+```
+- name: configure logrotate
+  template:
+    src: etc/logrotate.d/httpd.conf.j2
+    dest: /etc/logrotate.d/httpd.conf
+
+- name: configure apache
+  template:
+    src: etc/httpd/conf/httpd.conf.j2
+    dest: /etc/httpd/conf/httpd.conf
+    owner: apache
+```
+
+---
+
+# Lab
+
+* Hopefully you received and followed the instructions
+  to set up your Ansible environment.
+
+---
+# Troubleshooting: verbose mode
+
+Adding extra `-v` arguments (using `-v -v -v` or just `-vvv`)
+will increase the verbosity of ansible's output.
+
+* No `-v` - just output tasks and plays and whether
+  or not it's successful
+* `-v` - shows the results of modules
+* `-vv` - shows the files from which tasks come
+* `-vvv` - shows what commands are being executed under the
+  hood on the target machine
+* `-vvvv` - shows what callbacks have been loaded
+* `-vvvvv` - shows some additional ssh configuration information
+
+---
+# Best practice: debug messages
+
+You can (and should) configure your debug messages to appear
+only at certain verbosities
+
+```
+  debug:
+    msg: "This will appear with -vv but not before"
+    verbosity: 2
+```
+
+---
+#Performance
+
+
+
+</script>
+
+
+  <script src="/assets/javascripts/p_slides.js"></script>
+  </body>
+</html>
