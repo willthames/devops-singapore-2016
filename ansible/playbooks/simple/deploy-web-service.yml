@@ -1,0 +1,53 @@
+- hosts: target
+  become: true
+
+  tasks:
+  - name: ensure firewalld is running
+    service:
+      name: firewalld
+      state: started
+      enabled: yes
+
+  - name: ensure that firewall is open
+    firewalld:
+      port: "{{ httpd_port }}/tcp"
+      permanent: yes
+      immediate: yes
+      state: enabled
+
+  - name: ensure that selinux allows port access
+    seport:
+      ports: "{{ httpd_port }}"
+      setype: http_port_t
+      proto: tcp
+      state: present
+
+  - name: create web home directory
+    file:
+      path: "{{ httpd_directory }}"
+      state: directory
+
+  - name: install web content
+    template:
+      src: index.html.j2
+      dest: "{{ httpd_directory }}/index.html"
+
+  - name: copy service file into place
+    template:
+      src: python-web.service.j2
+      dest: /usr/lib/systemd/system/python-web.service
+    notify: systemd reload
+
+  - meta: flush_handlers
+
+  - name: ensure python-web is running
+    service:
+      name: python-web
+      state: started
+      enabled: yes
+
+  handlers:
+  - name: systemd reload
+    command: systemctl daemon-reload
+    args:
+      warn: no

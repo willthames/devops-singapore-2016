@@ -1,6 +1,12 @@
 - hosts: all
+  become: true
 
   tasks:
+  - name: install requirements
+    yum:
+      name: policycoreutils-python
+      state: present
+
   - name: obtain contents of authorized_keys file
     command: cat /home/vagrant/.ssh/authorized_keys
     changed_when: False

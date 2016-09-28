@@ -12,6 +12,7 @@
     - git
     - sshpass
     - ansible-lint
+    - policycoreutils-python
     become: yes
 
   - name: download workshop resources

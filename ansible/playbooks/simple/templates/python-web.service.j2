@@ -1,0 +1,9 @@
+[Unit]
+Description=Simple python web service using SimpleHTTPServer
+
+[Service]
+WorkingDirectory={{ httpd_directory }}
+ExecStart=/bin/python -m SimpleHTTPServer {{ httpd_port }}
+
+[Install]
+WantedBy=multiuser.target
