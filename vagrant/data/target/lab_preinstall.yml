@@ -1,0 +1,9 @@
+- name: install mysql pre-reqs for lab
+  yum:
+    state: present
+    name: "{{ item }}"
+  with_items:
+  - libselinux-python
+  - mariadb-server
+  - mariadb
+  - MySQL-python

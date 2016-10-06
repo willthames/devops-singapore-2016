@@ -20,6 +20,8 @@
     become: yes
     notify: reload ssh
 
+  - include: lab_preinstall.yml
+
   handlers:
   - name: reload ssh
     service:
