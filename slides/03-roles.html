@@ -31,8 +31,9 @@
 ---
 # What is a role
 
-* Roles are a package of common tasks
-  and templates and variables.
+* Roles can do most of the things that playbooks
+  do - run tasks and handlers, install files or
+  write templates, set variables
 * Allows reusable implementation of common
   patterns.
 * Examples include roles that install database
@@ -58,6 +59,31 @@
 * `ansible-galaxy init new-role` creates a role
   skeleton
 
+---
+# Ansible role skeleton
+
+```
+testrole/
+├── defaults
+│   └── main.yml
+├── files
+├── handlers
+│   └── main.yml
+├── meta
+│   └── main.yml
+├── README.md
+├── tasks
+│   └── main.yml
+├── templates
+├── tests
+│   ├── inventory
+│   └── test.yml
+└── vars
+    └── main.yml
+```
+
+
+---
 # Installing a role
 
 * Best practice is to use a requirements.yml containing
@@ -79,6 +105,7 @@
 The latter mechanism is more useful for roles that don't come
 from galaxy.
 
+---
 # Installing a role
 
 The roles are then installed using
@@ -87,6 +114,7 @@ The roles are then installed using
 ansible-galaxy install -r playbooks/application/env/requirements.yml -p playbooks/application/env/roles -f
 ```
 
+---
 # Using a role
 
 * Read the README file to see what variables are expected, and
