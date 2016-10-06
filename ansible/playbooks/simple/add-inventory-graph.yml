@@ -2,12 +2,14 @@
 
   tasks:
   - name: generate inventory graph for target host
-    shell: ansible-inventory-grapher target | dot -Tpng > target.png
+    shell: /usr/bin/ansible-inventory-grapher target | /usr/bin/dot -Tpng > target.png
     args:
       chdir: ~
       creates: ~/target.png
+    delegate_to: localhost
 
   - name: put inventory graph on target's web server
     copy:
-      src: ~/target.png
-      dest: {{ httpd_directory }}/target.png
+      src: ~vagrant/target.png
+      dest: "{{ httpd_directory }}/target.png"
+    become: true
