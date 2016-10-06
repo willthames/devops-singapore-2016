@@ -84,16 +84,43 @@ By Will Thames:
 # Getting up and running with Ansible
 
 * Install Ansible
-  - RHEL/CentOS/Fedora: yum install ansible
-  - OS X: brew install ansible [FIXME: check]
+  - RHEL/CentOS/Fedora: `yum install ansible`
+  - OS X: `brew install ansible`
   - Windows: doesn't install directly - use a VM or cygwin
-  - Most platforms: pip install ansible
+  - Most platforms: `pip install ansible`
+
 
 ---
-# Configuration file
+# Setting up target hosts
+
+Ansible is most easily used if you can ssh
+as a normal user to a host without a password, and then
+sudo to root without a password.
+
+---
+# Setting up ssh keys
+
+```
+ssh-keygen -f ansible
+ssh-add ~/.ssh/ansible
+ssh-copy-id -f ~/.ssh/ansible $targethost
+```
+
+---
+# Setting up sudo
+
+```
+echo "ansible_user (ALL) NOPASSWD: ALL" > /etc/sudoers.d/ansible
+```
+
+In some cases you will want to lock this down
+further, perhaps with a password (you can enter a sudo password
+if you add `-K` to your command line).
 
 
 
+
+---
 # Basic Concepts
 
 * Modules
@@ -147,6 +174,19 @@ run first.
       path: ~/throwaway
       state: absent
 ```
+
+---
+# Structuring playbooks
+
+There are a number of elements to a playbook,
+that can be separated into the following classes
+of elements:
+
+* Connection specification: `hosts`, `forks`, `serial`
+* User specification: `remote_user`, `become`, `become_user` etc.
+* Variable inclusion: `vars`, `vars_files`, `vars_prompt` etc.
+* Logic before tasks: `pre_tasks`, `roles`
+* Tasks and handlers: `tasks`, `handlers`
 
 ---
 # Best practices: YAML
@@ -326,7 +366,63 @@ only at certain verbosities
 ```
 
 ---
-#Performance
+# Organising playbooks
+
+For any self-contained set of playbooks (this might
+be all of your playbooks, or playbooks just for a particular
+application), the following is a reasonable directory structure
+
+```
+.
+├── ansible.cfg
+├── inventory
+│   └── group_vars
+│       └── web
+└── playbooks
+    ├── simple
+    │   ├── deploy-web-service.yml
+    │   └── templates
+    │       ├── index.html.j2
+    │       └── python-web.service.j2
+    └── with_roles
+```
+
+# Organising playbooks
+
+If you need modules or plugins, they can also be installed
+in the top level directory. Something like
+
+```
+.
+├── ansible.cfg
+├── inventory
+├── library
+├── playbooks
+└── plugins
+    ├── filter
+    └── lookup
+```
+
+is likely a reasonable setup.
+
+---
+# Configuration file
+
+```
+[defaults]
+hostfile = ./inventory
+roles_path = ./roles
+library = ./library
+filter_plugins = ./plugins/filter
+lookup_plugins = ./plugins/lookup
+callback_whitelist = profile_tasks,timer
+command_warnings = True
+
+[ssh_connection]
+pipelining = True
+control_path = %(directory)s/ssh-%%h-%%p-%%r
+```
+
 
 
 

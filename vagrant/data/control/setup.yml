@@ -12,6 +12,8 @@
     - git
     - sshpass
     - ansible-lint
+    - graphviz
+    - ansible-inventory-grapher
     - policycoreutils-python
     become: yes
 
