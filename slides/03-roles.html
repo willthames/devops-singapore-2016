@@ -29,59 +29,62 @@
 # Part 3: Roles
 
 ---
-
-# Why do we have roles
+# What is a role
 
 * Roles are a package of common tasks
   and templates and variables.
-* Roles are designed for reuse
+* Allows reusable implementation of common
+  patterns.
+* Examples include roles that install database
+  engines (mysql, postgresql etc.), web servers
+  (apache, nginx) and many more.
+
+---
+# Why do we have roles
+
 * Roles should implement best practices
-  (e.g. our apache and nginx roles make it
-  easy to create secure web sites)
+  (e.g. an apache role that enforced secure
+  SSL ciphers)
 * If more than one playbook might do
   something in the same way, that should
   be abstracted to a role
 
 ---
-
 # Where do roles come from
 
 * Ansible Galaxy (https://galaxy.ansible.com/) -
-  e.g. our postgresql and mysql both originate
-  from there
+  there are 1000s of roles suitable for most
+  operating systems.
 * `ansible-galaxy init new-role` creates a role
   skeleton
-* There are currently nearly 100 roles in our gitlab.
-  (See the ansible-roles group)
 
 ---
-# Galaxy for roles
+# Managing roles
 
 - We use Ansible's [Galaxy](http://docs.ansible.com/galaxy.html) functionality for managing internal roles
 - Each role is its own git repo
-- Roles used in production are tagged --- production playbooks must use
-    versioned roles, and production roles must have versions.
-- Contribution workflow is similar to playbooks, but because of the
-  tagging and self-contained nature of roles, only one approval is needed.
----
+- Each application-environment combination gets its own roles file used to provide
+  roles for the playbooks
 
+---
 # Versioning roles
 
-
-Best practices
-say that all production roles MUST be versioned, and that all production
-playbooks MUST use versioned roles.
-
-Versioning allows repeatability - if the same playbook with the same rolesfile
-is used in 6 months time, it should work in exactly the same way. This would
-not be the case if a playbook just used the latest versions of the role.
-
-This means we can be less strict with accepting role changes (because changes
-to roles should not affect users of that role).
+There are some good reasons to version roles:
+* Allows safe development of roles without enforcing strict backward
+  compatibility - older playbooks can continue to use older versions
+  of a role until it is ready to upgrade.
+* Versioning allows repeatability - if the same playbook with the same rolesfile
+  is used in 6 months time, it should work in exactly the same way. This would
+  not be the case if a playbook just used the latest versions of the role.
 
 ---
 
 # How we version roles
+
+- Roles used in production are tagged --- production playbooks must use
+    versioned roles, and production roles must have versions.
+- Contribution workflow is similar to playbooks, but because of the
+  tagging and self-contained nature of roles, only one approval is needed.
 
 Once a code review is accepted:
 
@@ -97,7 +100,7 @@ git push upstream v2.3
 In a requirements.yml, a role specification looks like
 
 ```
-- src: https://gitlab.example.com/ansible-roles/apache.git
+- src: https://git.example.com/ansible-roles/apache.git
   scm: git
   version: v3.6
 ```
