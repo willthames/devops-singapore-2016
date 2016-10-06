@@ -1,0 +1,9 @@
+- hosts: whatever
+
+  tasks:
+  - name: this task will fail syntax check
+    debug: msg="hello: world"
+
+  - name: this task works fine with the syntax check
+    debug:
+      msg: "hello: world"
