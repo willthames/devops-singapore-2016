@@ -1,0 +1,13 @@
+- hosts: target
+
+  tasks:
+  - name: generate inventory graph for target host
+    shell: ansible-inventory-grapher target | dot -Tpng > target.png
+    args:
+      chdir: ~
+      creates: ~/target.png
+
+  - name: put inventory graph on target's web server
+    copy:
+      src: ~/target.png
+      dest: {{ httpd_directory }}/target.png
