@@ -175,6 +175,17 @@ git push upstream v2.3
 ---
 # Lab
 
+Using a [suitable mysql role](https://galaxy.ansible.com/resmo/mysql/)
+from galaxy.ansible.com,
+install and configure a database called catalogue:
+
+database_name: shop
+database_user: shop
+database_password: sh0p
+
+A starting playbook exists in playbooks/with_roles/install_db.yml, you'll need
+to install the role, and set up the inventory.
+
 
 </script>
 
