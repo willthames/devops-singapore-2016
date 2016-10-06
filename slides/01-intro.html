@@ -29,15 +29,23 @@ By Will Thames:
 * Senior Systems Engineer, Red Hat Brisbane
 * contributor to Ansible
 * developer of ansible-lint, ansible-review and ansible-inventory-grapher.
+* blogger of various thoughts on Ansible
 
 ---
 
-# About this talk
+# About this talk (1)
 
 * Part 1: Introduction to Ansible
 * Part 2: Ansible and variables
 * Part 3: Ansible and roles
 * Part 4: Integrating best practices
+
+---
+# About this talk (2)
+
+* This workshop is untested (sorry)
+* There might be mistakes
+* There might be missing information
 
 ---
 # Introduction to Ansible
@@ -60,7 +68,7 @@ By Will Thames:
     - ...
 
 ---
-# Why use Ansible
+# Why use Ansible (1)
 
 * Easy to install
     - control machine needs ssh and python
@@ -73,7 +81,7 @@ By Will Thames:
       have root access
 
 ---
-# Why use Ansible
+# Why use Ansible (2)
 
 * Easy to do easy things with
 * Not much harder to do hard things with
@@ -117,18 +125,17 @@ In some cases you will want to lock this down
 further, perhaps with a password (you can enter a sudo password
 if you add `-K` to your command line).
 
-
-
-
 ---
 # Basic Concepts
 
 * Modules
 * Playbooks
-* Variables
 * Templates
-* Inventory
-* Roles
+* Tasks
+* Handlers
+* Variables (part 2)
+* Inventory (part 2)
+* Roles (part 3)
 
 ---
 # Modules
@@ -141,6 +148,7 @@ if you add `-K` to your command line).
   packages, writing to files, updating network
   devices, and many others
 
+[Ansible Module Index](docs.ansible.com/ansible/modules_by_category.html)
 
 ---
 # Example
@@ -199,28 +207,8 @@ Note that the previous task could be written
 
 Ansible have said that the preferred format is
 the YAML dictionary format, as the key=value
-form can lead to strange errors.
-
-```
-    debug: msg="DEBUG: this is bad"
-```
-
-is not valid YAML, but
-
-```
-    debug:
-      msg: "DEBUG: this is good"
-```
-
-is fine.
-
----
-# Tasks
-
-All tasks and handlers must have a unique name within a role (as names are
-prefixed with role in the output, we don't need to worry about uniqueness across
-roles). This allows `--start-at-task` to be unambiguous, and also means that
-it's easy to see at what point a playbook failed.
+form can lead to strange errors (we'll see this
+later with the `--syntax-check`er)
 
 ---
 # Check Mode
@@ -248,15 +236,23 @@ You can also do things differently when in check mode
 by changing behaviour based upon `when: ansible_check_mode`.
 
 ---
-# Convergence
+# Diff Mode
 
-  Plays and especially roles should be developed with continuous delivery in
-  mind.  Therefore no play should list any value other than `changed: 0` in the
-  report at the end of the play if no functional changes on the target would
-  occur (e.g. at the end of a second run of the same playbook).
+Diff mode is incredibly useful in conjunction with check mode to see
+how a file would change, before the change is made. Diff mode can
+be run by passing `-D` or `--diff-mode` to `ansible-playbook`
 
 ---
-# Command tasks
+# Repeatability
+
+If a playbook runs twice, the expected result is that nothing
+should change on the second run - ansible should report
+zero changes.
+
+This should be true whether 10 seconds later, or 10 months later.
+
+---
+# Repeatability - command tasks
 
 * In particular, `shell` and `command` will always return `changed: True`. Use
   of `changed_when: False` when running read-only commands is encouraged
@@ -269,6 +265,9 @@ by changing behaviour based upon `when: ansible_check_mode`.
       changed_when: false
       always_run: true
   ```
+
+---
+# Command tasks
 
 * Other means of reducing the amount of unnecessary changes:
     - use `creates` or `removes` with commands to prevent an action happening
@@ -329,6 +328,43 @@ the target destination in the source repository
     src: etc/httpd/conf/httpd.conf.j2
     dest: /etc/httpd/conf/httpd.conf
     owner: apache
+```
+
+---
+# Handlers
+
+Handlers are tasks that are 'fired' when a task
+makes a change
+
+```
+    tasks:
+    - name: install httpd configuration file
+      template:
+        src: etc/httpd/conf/httpd.conf.j2
+        dest: /etc/httpd/conf/httpd.conf
+      notify: reload apache
+
+    handlers:
+    - name: reload apache
+      service:
+        name: apache
+        state: reloaded
+```
+
+---
+# Handlers
+
+This is another mechanism of ensuring a change
+is made only when it needs to be (as if no
+change is made to the configuration, the
+handler will not fire)
+
+Handlers are run at the end of all tasks -
+if you want to run them earlier, you can
+use the `meta` task:
+
+```
+- meta: flush_handlers
 ```
 
 ---

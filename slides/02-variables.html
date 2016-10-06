@@ -42,9 +42,11 @@
   Yourself)
 
 ---
-
 # Roles `defaults/main.yml`
 
+We'll talk about roles in part 3, but roles can
+set default values for variables, and these
+are available to the rest of the playbook.
 
 ---
 # Inventory
@@ -83,14 +85,19 @@ ansible-inventory-grapher -q web-01.example.com | \
 ---
 # Best practices: host_vars
 
-host_vars can be useful, but should really be
-saved for times when only one host will ever have
-that value.
+* Host variables should be used only for things that will only be true
+  for a single host.  An example of this might be caching of a UUID of
+  a host, or setting kerberos keytabs
 
-This means that SSL certificates and keys,
-kerberos keytabs, server uuids etc. might be
-candidates, but most other inventory variables
-will be properties of groups.
+* This means that SSL certificates and keys,
+  kerberos keytabs, server uuids etc. might be
+  candidates, but most other inventory variables
+  will be properties of groups.
+
+* Variables should not be stored in inventory host files (using [group:vars]
+  or [host:vars] mechanism) - the inventory files should be used for group
+  ontents and hierarchy definitions (using [group:children]).
+  This is to avoid confusion about where variables might be set.
 
 ---
 # Facts
@@ -101,7 +108,7 @@ will be properties of groups.
 * You don't need to run the `setup` module
   directly to gather facts - it is always run
   in playbook mode, unless `gather_facts` is
-  set.
+  set to `False`
 
 ---
 # `set_fact` module
@@ -179,16 +186,7 @@ will be properties of groups.
   can be useful for overriding defaults during
   an outage.
 
----
-# Host variables
 
-* Host variables should be used only for things that will only be true
-  for a single host.  An example of this might be caching of a UUID of
-  a host, or setting kerberos keytabs
-* Variables should not be stored in inventory host files (using [group:vars]
-  or [host:vars] mechanism) - the inventory files should be used for group
-  ontents and hierarchy definitions (using [group:children]).
-  This is to avoid confusion about where variables might be set.
 
 
 # Lab

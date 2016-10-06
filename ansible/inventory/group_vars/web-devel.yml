@@ -1,1 +1,1 @@
-database_host: db.devel.example.com 
+web_database_host: db.devel.example.com

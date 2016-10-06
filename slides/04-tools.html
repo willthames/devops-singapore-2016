@@ -29,7 +29,6 @@
 # Part 4: Tools
 
 * syntax check
-* check mode
 * diff mode
 * `ansible-doc`
 * `ansible-lint`
@@ -40,18 +39,19 @@
 Ansible can check the syntax of a playbook using `--syntax-check` argument.
 
 ```
-ansible-playbook --syntax-check examples/broken_yaml.yml
+$ ansible-playbook --syntax-check playbooks/simple/broken-syntax.yml
+ERROR! Syntax Error while loading YAML.
+
+
+The error appears to have been in '/home/vagrant/playbooks/simple/broken-syntax.yml': line 5, column 22, but may
+be elsewhere in the file depending on the exact syntax problem.
+
+The offending line appears to be:
+
+  - name: this task will fail syntax check
+    debug: msg="hello: world"
+                     ^ here
 ```
-
-[FIXME: write example]
-
-
-
-# Diff Mode
-
-Diff mode is incredibly useful in conjunction with check mode to see
-how a file would change, before the change is made. Diff mode can
-be run by passing `-D` or `--diff-mode` to `ansible-playbook`
 
 
 
@@ -60,26 +60,7 @@ be run by passing `-D` or `--diff-mode` to `ansible-playbook`
 `ansible-doc` is very useful for finding the syntax
 of a module without having to look it up online
 
-```
-> DEBUG
 
-  This module prints statements during execution and can be useful for debugging variables or expressions without necessarily halting the playbook. Useful for debugging
-  together with the 'when:' directive.
-
-  * note: This module has a corresponding action plugin.
-
-Options (= is mandatory):
-
-- msg
-        The customized message that is printed. If omitted, prints a generic message.
-        [Default: Hello world!]
-- var
-        A variable name to debug.  Mutually exclusive with the 'msg' option.
-        [Default: (null)]
-- verbosity
-        A number that controls when the debug is run, if you set to 3 it will only run debug when -vvv or above
-        [Default: 0]
-```
 ---
 # ansible-lint
 
