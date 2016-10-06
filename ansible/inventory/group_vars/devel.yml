@@ -1,0 +1,3 @@
+dns_server: dns01.devel.example.com
+rails_env: development
+log_server: logs.devel.example.com

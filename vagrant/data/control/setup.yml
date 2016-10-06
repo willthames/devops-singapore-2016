@@ -34,7 +34,7 @@
 
   - name: install inventory file
     copy:
-      content: "[web]\ntarget ansible_host={{ target }} ansible_user=vagrant"
+      content: "[web-devel]\ntarget ansible_host={{ target }} ansible_user=vagrant"
       dest: /home/vagrant/inventory/vagrant
 
   - name: create ephemeral ssh key
