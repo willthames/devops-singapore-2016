@@ -4,7 +4,7 @@
     target: 192.168.33.11
 
   tasks:
-  - name: install prerequisites
+  - name: install prerequisites through yum
     yum:
       name: "{{ item }}"
       state: present
@@ -13,8 +13,14 @@
     - sshpass
     - ansible-lint
     - graphviz
-    - ansible-inventory-grapher
+    - python-pip
     - policycoreutils-python
+    become: yes
+
+  - name: install prerequisites through pip
+    pip:
+      name: ansible-inventory-grapher
+      state: present
     become: yes
 
   - name: download workshop resources
