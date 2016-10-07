@@ -1,4 +1,4 @@
-# Part 2: Ansible and variables
+% Part 2: Ansible and variables
 
 ---
 
@@ -32,15 +32,22 @@ are available to the rest of the playbook.
   such files and scripts.
 * Ansible also sources host variables and group variables from `host_vars`
   and `group_vars` stored in the inventory directory
-* Inheritance works mostly as you'd expect - host variables override group
-  variables, and the variables of child groups override their parent
+
+---
+# Inventory inheritance
+* Inventory variables take precedence the closer they are to the host.
+* Host variables override group variables
+* Child group variables override their parents
+* This means you can set defaults in top level groups, and override them lower
+  down (e.g. the default log level for an application might be WARN, but in
+  development it should be DEBUG).
 
 ---
 
-# `ansible-inventory-grapher`
+# ansible-inventory-grapher
 
 * Use ansible-inventory-grapher (`pip install ansible-inventory-grapher`) along
-  with graphviz to see inventory hierarchys:
+  with graphviz to help visualize inventory hierarchies:
 
 ```
 ansible-inventory-grapher -q target | \
@@ -49,13 +56,17 @@ ansible-inventory-grapher -q target | \
 
 ---
 
-# `ansible-inventory-grapher` demo
+# ansible-inventory-grapher demo
 
 Run
 
 ```
 ansible-playbook playbooks/simple/add-inventory-graph.yml
 ```
+
+---
+
+# ansible-inventory-grapher result
 
 ![inventory-grapher example](images/target.png)
 
@@ -273,3 +284,9 @@ or set the `ANSIBLE_VAULT_PASSWORD_FILE` environment variable.
     - uses the debug task to show amount of memory free on the target host
     - runs a debug task if a variable `run_me` is set.
     - Stores the contents of the results of listing the directory of `httpd_directory`
+
+---
+
+# End of Part 2
+
+[Proceed to Part 3](03-roles.html)

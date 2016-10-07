@@ -1,5 +1,4 @@
----
-# Part 3: Roles
+% Part 3: Roles
 
 ---
 
@@ -68,6 +67,10 @@ testrole/
   the specification of the role you wish to use. This
   can be from [Ansible Galaxy](https://galaxy.ansible.com)
   or from github or your own internal source repository.
+
+---
+
+# requirements.yml
 
 * The following are effectively equivalent:
 
@@ -144,9 +147,8 @@ There are some good reasons to version roles:
 
 # How we version roles
 
-- Roles used in production are tagged ---
- production playbooks must use
-    versioned roles, and production roles must have versions.
+- Production playbooks must use versioned roles
+- Production roles must have versions.
 - Once a change to a role has passed code review and is accepted on
   the master branch:
 
@@ -172,3 +174,9 @@ database_password: sh0p
 
 A starting playbook exists in playbooks/with_roles/install_db.yml, you'll need
 to install the role, and set up the inventory.
+
+---
+
+# End of Part 3
+
+[Proceed to Part 4](04-tools.html)

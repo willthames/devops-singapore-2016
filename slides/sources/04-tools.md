@@ -1,10 +1,13 @@
-# Part 4: Tools
+% Part 4: Tools
 
-* syntax check
-* diff mode
-* `ansible-doc`
-* `ansible-lint`
-* `ansible-review`
+---
+# Tools for best practices
+* Continuous integration:
+    * syntax check
+    * `ansible-lint`
+
+* Code review
+    * `ansible-review`
 
 ---
 
@@ -27,14 +30,6 @@ The offending line appears to be:
                      ^ here
 ```
 
----
-
-# ansible-doc
-
-`ansible-doc` is very useful for finding the syntax
-of a module without having to look it up online
-
-e.g. `ansible-doc mysql_user`
 
 ---
 
@@ -55,7 +50,6 @@ There are several categories of rules
 Every rule is treated as an error - there is no way to
 mark rules as warnings. You can choose to run specific
 rules or to exclude specific rules
-
 
 ---
 
@@ -88,7 +82,7 @@ more general roles.
 
 # ansible-review
 
-ansible-review is designed to apply an automated code
+`ansible-review` is designed to apply an automated code
 review process to work with an organisation's
 standards.
 
@@ -119,3 +113,24 @@ or
 ```
 git diff master | ansible-review
 ```
+
+---
+
+# End of the Workshop!
+
+Further resources:
+
+* [Ansible Docs](http://docs.ansible.com/ansible/)
+* [Ansible source](https://github.com/ansible/ansible)
+* [Ansible Mailing list](https://groups.google.com/forum/!ansible-project)
+* [Ansible Galaxy](http://galaxy.ansible.com)
+
+---
+
+# Thank you!
+
+Feedback welcomed (positive and negative)
+
+- Twitter: @willthames
+- Email: will@thames.id.au
+

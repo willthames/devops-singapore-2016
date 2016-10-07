@@ -1,6 +1,10 @@
-# Ansible From Zero to Best Practices
+% Ansible From Zero to Best Practices
+% Will Thames
+% 09 October 2016
 
-By Will Thames:
+---
+
+# About me
 
 * Senior Systems Engineer, Red Hat Brisbane
 * Contributor to Ansible
@@ -11,8 +15,7 @@ By Will Thames:
 
 ---
 
-
-# About this talk (1)
+# Workshop Contents
 
 * Part 1: Introduction to Ansible
 * [Part 2: Ansible and variables](02-variables.html)
@@ -21,7 +24,7 @@ By Will Thames:
 
 ---
 
-# About this talk (2)
+# About this workshop
 
 * This workshop is untested (sorry)
 * There might be mistakes
@@ -54,7 +57,7 @@ By Will Thames:
 
 ---
 
-# Why use Ansible (1)
+# Why use Ansible
 
 * Easy to install
     - control machine needs ssh and python
@@ -68,7 +71,7 @@ By Will Thames:
 
 ---
 
-# Why use Ansible (2)
+# Why use Ansible
 
 * Easy to do easy things with
 * Not much harder to do hard things with
@@ -77,7 +80,7 @@ By Will Thames:
 
 ---
 
-# Getting up and running with Ansible
+# Getting started with Ansible
 
 * Install Ansible
   - RHEL/CentOS/Fedora: `yum install ansible`
@@ -87,7 +90,7 @@ By Will Thames:
 
 ---
 
-# Setting up target hosts
+# Set up target hosts
 
 Ansible is most easily used if you can ssh
 as a normal user to a host without a password, and then
@@ -95,7 +98,7 @@ sudo to root without a password.
 
 ---
 
-# Setting up ssh keys
+# Set up ssh keys
 
 ```
 ssh-keygen -f ansible
@@ -105,15 +108,38 @@ ssh-copy-id -f ~/.ssh/ansible $targethost
 
 ---
 
+# Demo: Test ping
+
+Test with the `ping` module:
+
+```
+ansible -m ping target
+```
+
+---
+
 # Setting up sudo
 
 ```
-echo "ansible_user (ALL) NOPASSWD: ALL" > /etc/sudoers.d/ansible
+echo "ansible_user (ALL) NOPASSWD: ALL" > \
+  /etc/sudoers.d/ansible
 ```
 
 In some cases you will want to lock this down
 further, perhaps with a password (you can enter a sudo password
 if you add `-K` to your command line).
+
+---
+
+# Demo: Test sudo setup
+
+```
+ansible -a whoami target
+ansible -a whoami -b target
+```
+
+(Note that `ansible` runs the `command` module by default
+so no `-m` is needed)
 
 ---
 
@@ -134,10 +160,17 @@ if you add `-K` to your command line).
 
 * A single module allows the execution of a
   self-contained task.
+* Modules are designed to provide an abstraction
+  around simple and complex tasks to allow them
+  to be repeatable and handle error conditions nicely
+* We've already briefly seen the `ping` and
+  `command` modules.
 
-* There are modules for an awful lot of things - 
-  e.g.:
-    * configuring services in AWS
+---
+
+# Built-in modules
+* There are modules for an awful lot of things - e.g.:
+    * configuring services in AWS, Google, Azure, Openstack etc.
     * installing OS packages
     * writing to files
     * updating network devices
@@ -148,9 +181,9 @@ See the [Ansible Module Index](docs.ansible.com/ansible/modules_by_category.html
 
 ---
 
-# Example
+# Demo: `ansible`
 
-Using the `ansible` command line, it's easy to
+Using the `ansible` command line utility, it's easy to
 run a simple module to get all of the facts from a repo
 
 ```
@@ -162,6 +195,15 @@ or run an ad-hoc task
 ```
 ansible -m file -a "state=directory path=~/throwaway" target
 ```
+
+---
+
+# Demo: `ansible-doc`
+
+`ansible-doc` is very useful for finding the syntax
+of a module without having to look it up online
+
+e.g. `ansible-doc mysql_user`
 
 ---
 
@@ -198,6 +240,14 @@ others.
 Best practices suggest always naming tasks -
 it's easier to follow what is happening if the
 tasks are well named.
+
+Naming tasks also allows the use of `--start-at-task`
+to allow ansible-playbook to start at a later point
+in the playbook
+
+---
+
+# Naming tasks in action
 
 The task in the previous playbook looks like
 this when named:
@@ -280,6 +330,7 @@ See more: [Become](http://docs.ansible.com/ansible/become.html)
 - name: install package
   yum:
     name: httpd
+    state: present
   become: yes
 
 - name: connect to the database
@@ -294,7 +345,7 @@ See more: [Become](http://docs.ansible.com/ansible/become.html)
 Note that the previous task could be written
 
 ```
-    file: path=~/throwaway state=absent
+    yum: name=httpd state=present
 ```
 
 Ansible have said that the preferred format is
@@ -304,7 +355,7 @@ later with the `--syntax-check`er)
 
 ---
 
-# Structuring playbooks (1)
+# Structuring playbooks
 
 There are a number of elements to a playbook,
 that can be separated into the following classes
@@ -318,7 +369,7 @@ of elements:
 
 ---
 
-# Structuring playbooks (2)
+# Structuring playbooks
 
 Playbooks can also include other playbooks, using `include` at
 the play level, or include task files by using the `include` task
@@ -608,3 +659,9 @@ command_warnings = True
 pipelining = True
 control_path = %(directory)s/ssh-%%h-%%p-%%r
 ```
+
+---
+
+# End of Part 1
+
+[Proceed to Part 2](02-variables.html)
