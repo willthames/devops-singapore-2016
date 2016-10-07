@@ -3,3 +3,5 @@ web-devel
 
 [devel:children]
 web-devel
+
+[web-devel]
