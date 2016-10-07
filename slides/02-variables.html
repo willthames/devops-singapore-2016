@@ -1,202 +1,233 @@
-<!doctype html>
+<!DOCTYPE html>
 <html>
-  <head>
-      <meta http-equiv="content-type" content="text/html; charset=UTF-8">
-      <title>p_slides</title>
-      <link rel="stylesheet" type="text/css" media="screen, projection, print" href="/assets/stylesheets/slidy.css" />
-      <link rel="stylesheet" type="text/css" media="screen" href="/assets/stylesheets/style.css" />
-      <link rel="stylesheet" type="text/css" media="screen, print" href="/assets/stylesheets/twitter_bootstrap.css" />
-      <link rel="stylesheet" type="text/css" media="screen, print" href="/themes/zhaw/zhaw.css" />
-      <script src="/assets/javascripts/jquery-3.1.0.min.js"></script>
-      <script src="/assets/javascripts/remarkable-1.6.2.min.js"></script>
-      <script src="/assets/javascripts/slidy.js"></script>
-      <script src="/assets/javascripts/jquery-syntax/jquery.syntax.min.js"></script>
-
-      <script>
-        // configure theme variables here
-        var default_footer = "Ansible from Zero to Best Practices • October 2016"
-      </script>
-      <script src="/themes/zhaw/zhaw.js"></script>
-  </head>
-  <body>
-
-    <script type="p_slides" class="presentation">
-
-# Ansible From Zero to Best Practices
-
----
-
-# Part 2: Ansible and variables
-
----
-# Variables
-
-* In general logic should be the same
-  (or similar) for all environments.
-* Variables fill in the contents of template
-  files, can be used for the source of files,
-  and to choose whether or not to perform a
-  task (to name some reasons)
-* Fewer variations in configuration sources
-  reduces likelihood of errors (Don't Repeat
-  Yourself)
-
----
-# Roles `defaults/main.yml`
-
-We'll talk about roles in part 3, but roles can
-set default values for variables, and these
-are available to the rest of the playbook.
-
----
-# Inventory
-
-* Inventory is used to define the hierarchy of hosts and the groups to which
-  they belong.
-* The inventory source can be a file, or a script, or a directory containing
-  such files and scripts.
-* Ansible also sources host variables and group variables from `host_vars`
-  and `group_vars` stored in the inventory directory
-* Inheritance works mostly as you'd expect --- host variables override group
-  variables, and the variables of child groups override their parent
-
----
-# ansible-inventory-grapher
-
-* Use ansible-inventory-grapher (`pip install ansible-inventory-grapher`) along
-  with graphviz to see inventory hierarchys:
-
-```
-ansible-inventory-grapher -q web-01.example.com | \
-  dot -Tpng | display png:-
-```
+<head>
+  <meta charset="utf-8">
+  <meta name="generator" content="pandoc">
+  <title></title>
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <link rel="stylesheet" href="reveal.js/css/reveal.css"/>
+  <link rel="stylesheet" href="overrides.css"/>
+  <style type="text/css">code{white-space: pre;}</style>
+  <link rel="stylesheet" href="reveal.js/css/theme/white.css" id="theme">
+  <!-- If the query includes 'print-pdf', include the PDF print sheet -->
+  <script>
+    if( window.location.search.match( /print-pdf/gi ) ) {
+      var link = document.createElement( 'link' );
+      link.rel = 'stylesheet';
+      link.type = 'text/css';
+      link.href = 'reveal.js/css/print/pdf.css';
+      document.getElementsByTagName( 'head' )[0].appendChild( link );
+    }
+  </script>
+  <!--[if lt IE 9]>
+  <script src="reveal.js/lib/js/html5shiv.js"></script>
+  <![endif]-->
+</head>
+<body>
+  <div class="reveal">
+    <div class="slides">
 
 
----
-# Best practices: inventory
+<section id="part-2-ansible-and-variables" class="slide level1">
+<h1>Part 2: Ansible and variables</h1>
+</section>
+<section id="variables" class="slide level1">
+<h1>Variables</h1>
+<ul>
+<li>In general logic should be the same (or similar) for all environments.</li>
+<li>Variables fill in the contents of template files, can be used for the source of files, and to choose whether or not to perform a task (to name some reasons)</li>
+<li>Fewer variations in configuration sources reduces likelihood of errors (Don't Repeat Yourself)</li>
+</ul>
+</section>
+<section id="roles-defaultsmain.yml" class="slide level1">
+<h1>Roles <code>defaults/main.yml</code></h1>
+<p>We'll talk about roles in part 3, but roles can set default values for variables, and these are available to the rest of the playbook.</p>
+</section>
+<section id="inventory" class="slide level1">
+<h1>Inventory</h1>
+<ul>
+<li>Inventory is used to define the hierarchy of hosts and the groups to which they belong.</li>
+<li>The inventory source can be a file, or a script, or a directory containing such files and scripts.</li>
+<li>Ansible also sources host variables and group variables from <code>host_vars</code> and <code>group_vars</code> stored in the inventory directory</li>
+<li>Inheritance works mostly as you'd expect - host variables override group variables, and the variables of child groups override their parent</li>
+</ul>
+</section>
+<section id="ansible-inventory-grapher" class="slide level1">
+<h1><code>ansible-inventory-grapher</code></h1>
+<ul>
+<li>Use ansible-inventory-grapher (<code>pip install ansible-inventory-grapher</code>) along with graphviz to see inventory hierarchys:</li>
+</ul>
+<pre><code>ansible-inventory-grapher -q target | \
+  dot -Tpng | display png:-</code></pre>
+</section>
+<section id="ansible-inventory-grapher-demo" class="slide level1">
+<h1><code>ansible-inventory-grapher</code> demo</h1>
+<p>Run</p>
+<pre><code>ansible-playbook playbooks/simple/add-inventory-graph.yml</code></pre>
+<figure>
+<img src="images/target.png" alt="inventory-grapher example" /><figcaption>inventory-grapher example</figcaption>
+</figure>
+</section>
+<section id="best-practices-inventory" class="slide level1">
+<h1>Best practices: inventory</h1>
+<ul>
+<li>Set <code>hosts_file</code> in the ansible configuration file to a directory</li>
+<li>Each file in that directory can be an independent part of the inventory</li>
+<li>Inventory scripts can also live in that directory</li>
+<li>That directory can contain <code>host_vars</code> and <code>group_vars</code></li>
+</ul>
+</section>
+<section id="best-practices-host_vars" class="slide level1">
+<h1>Best practices: <code>host_vars</code></h1>
+<ul>
+<li><p>Host variables should be used only for things that will only be true for a single host. An example of this might be caching of a UUID of a host, or setting kerberos keytabs</p></li>
+<li><p>This means that SSL certificates and keys, kerberos keytabs, server uuids etc. might be candidates, but most other inventory variables will be properties of groups.</p></li>
+<li><p>Variables should not be stored in inventory host files (using <code>[group:vars]</code> or <code>[host:vars]</code> mechanism) - the inventory files should be used for group ontents and hierarchy definitions (using <code>[group:children]</code>). This is to avoid confusion about where variables might be set.</p></li>
+</ul>
+</section>
+<section id="playbook-vars-and-vars_prompt" class="slide level1">
+<h1>Playbook vars and vars_prompt</h1>
+<p>In general playbooks shouldn't need to define vars, but the capability exists.</p>
+<p><code>vars_prompt</code> is useful if you need to provide a variable at run time - e.g. a password for a service and don't want to source it from a vaulted file.</p>
+</section>
+<section id="vars_prompt-example" class="slide level1">
+<h1><code>vars_prompt</code> example</h1>
+<pre><code>- hosts: certificate_authority
 
-* Set `hosts_file` in the ansible configuration
-  file to a directory
-* Each file in that directory can be an independent
-  part of the inventory
-* Inventory scripts can also live in that directory
-* That directory can contain `host_vars` and `group_vars`
+  vars_prompt:
+  - name: ca_password
+    prompt: &quot;Please enter your CA password&quot;
 
----
-# Best practices: host_vars
-
-* Host variables should be used only for things that will only be true
-  for a single host.  An example of this might be caching of a UUID of
-  a host, or setting kerberos keytabs
-
-* This means that SSL certificates and keys,
-  kerberos keytabs, server uuids etc. might be
-  candidates, but most other inventory variables
-  will be properties of groups.
-
-* Variables should not be stored in inventory host files (using [group:vars]
-  or [host:vars] mechanism) - the inventory files should be used for group
-  ontents and hierarchy definitions (using [group:children]).
-  This is to avoid confusion about where variables might be set.
-
----
-# Facts
-
-* Information about a host sourced
-  at runtime, e.g. IP address or OS version.
-
-* You don't need to run the `setup` module
-  directly to gather facts - it is always run
-  in playbook mode, unless `gather_facts` is
-  set to `False`
-
----
-# `set_fact` module
-
-* The `set_fact` module is used to derive new
-  facts from existing facts to produce more
-  useful ones. 
-
-  ```
-  - name: set OS version fact
-    set_fact:
-    args:
-      os_version: "{{ansible_distribution}}{{ansible_distribution_major_version}}"
-  ```
-
----
-# Using `set_fact`
-
-* The following will look under the `vars`
-  directory of a role for a file called e.g. `CentOS7.yml`
-  ```
-  - name: include variables based on OS version
-    include_vars: "{{ os_version }}.yml"
-  ```
-
-* The following will look under the `tasks`
-  directory of a role for a file called e.g. `CentOS7.yml`
-
-  ```
-  - name: run tasks based on OS version
-    include: "{{ os_version }}.yml"
-  ```
-
----
-# `register`ed variables
-
-* `register`ed variables used to store the
-   results of a task in a playbook.
-
-   ```
-   - name: get stat data for file
-     stat:
-       path: /path/to/file
-     register: stat_file
-
-   - name: fail if path doesn't exist
-     fail:
-       msg: "File does not exist"
-     when: not stat_file.stat.exists
-   ```
-
----
-# `include_vars` and `vars_files``
-
-* Use `include_vars` to include a variables
-  file as a task in a playbook run. You can use
-  `no_log` to ensure vars aren't logged.
-
-* You can also use `vars_files` in a playbook
-  to include one or more variables files.
-  `vars_files` can't be used in a role.
-
----
-# role `vars/main.yml`
-
-* Use roles vars/main.yml when you want to
-   override another role's defaults.
-
-# extra vars `-e`
-
-* Command line extra vars are useful for
-  setting configuration at run-time.
-* Set lots of variables at once by including
-  a variables file using `-e @filename.yml` -
-  can be useful for overriding defaults during
-  an outage.
+  tasks:
+  - name: sign certificate
+    command: openssl ca -in req.pem -out newcert.pem -passin env:CA_PASSWD
+    environment:
+      CA_PASSWD: &quot;{{ ca_password }}&quot;</code></pre>
+</section>
+<section id="registered-variables" class="slide level1">
+<h1><code>register</code>ed variables</h1>
+<ul>
+<li><code>register</code>ed variables used to store the results of a task in a playbook.</li>
+</ul>
+<p>``` - name: get stat data for file stat: path: /path/to/file register: stat_file</p>
+<ul>
+<li>name: fail if path doesn't exist fail: msg: &quot;File does not exist&quot; when: not stat_file.stat.exists ```</li>
+</ul>
+</section>
+<section id="facts" class="slide level1">
+<h1>Facts</h1>
+<ul>
+<li><p>Information about a host sourced at runtime, e.g. IP address or OS version.</p></li>
+<li><p>You don't need to run the <code>setup</code> module directly to gather facts - it is always run in playbook mode, unless <code>gather_facts</code> is set to <code>False</code></p></li>
+<li><p>If you ran the previous lab, you should be able to see the facts for <code>target</code> at http://192.168.33.11:8000/</p></li>
+</ul>
+</section>
+<section id="set_fact-module" class="slide level1">
+<h1><code>set_fact</code> module</h1>
+<ul>
+<li>The <code>set_fact</code> module is used to derive new facts from existing facts to produce more useful ones.</li>
+</ul>
+<p><code>- name: set OS version fact     set_fact:     args:       os_version: &quot;{{ansible_distribution}}{{ansible_distribution_major_version}}&quot;</code></p>
+</section>
+<section id="set_fact-examples" class="slide level1">
+<h1><code>set_fact</code> examples</h1>
+<ul>
+<li>The following will look under the <code>vars</code> directory of a role for a file called e.g. <code>CentOS7.yml</code> ```</li>
+<li><p>name: include variables based on OS version include_vars: &quot;{{ os_version }}.yml&quot; ```</p></li>
+<li><p>The following will look under the <code>tasks</code> directory of a role for a file called e.g. <code>CentOS7.yml</code></p></li>
+</ul>
+<p><code>- name: run tasks based on OS version     include: &quot;{{ os_version }}.yml&quot;</code></p>
+</section>
+<section id="include_vars-and-vars_files" class="slide level1">
+<h1><code>include_vars</code> and <code>vars_files</code></h1>
+<ul>
+<li><p>Use <code>include_vars</code> to include a variables file as a task in a playbook run. You can use <code>no_log</code> to ensure vars aren't logged.</p></li>
+<li><p>You can also use <code>vars_files</code> in a playbook to include one or more variables files. <code>vars_files</code> can't be used in a role.</p></li>
+</ul>
+</section>
+<section id="role-varsmain.yml" class="slide level1">
+<h1>Role <code>vars/main.yml</code></h1>
+<ul>
+<li>Use roles vars/main.yml when you want to override another role's defaults.</li>
+</ul>
+</section>
+<section id="extra-vars--e" class="slide level1">
+<h1>Extra vars <code>-e</code></h1>
+<ul>
+<li>Command line extra vars are useful for setting configuration at run-time.</li>
+<li>Set lots of variables at once by including a variables file using <code>-e @filename.yml</code> - can be useful for overriding defaults during an outage.</li>
+</ul>
+</section>
+<section id="variable-precedence" class="slide level1">
+<h1>Variable precedence</h1>
+<p>The order of variables presented has been in increasing order. There are more variable types than presented here - others aren't highly recommended</p>
+<p>See more: <a href="http://docs.ansible.com/ansible/playbooks_variables.html#variable-precedence-where-should-i-put-a-variable">Ansible Variable precedence</a></p>
+</section>
+<section id="secret-variables" class="slide level1">
+<h1>Secret variables</h1>
+<p>Ansible provides a tool called <code>ansible-vault</code> for encrypting secret variables. While other tools are available, the vault is usefully integrated.</p>
+</section>
+<section id="ansible-vault" class="slide level1">
+<h1>ansible-vault</h1>
+<ul>
+<li>Create: <code>ansible-vault create secrets.yml</code></li>
+<li>Edit: <code>ansible-vault edit secrets.yml</code></li>
+<li>View: <code>ansible-vault view secrets.yml</code></li>
+<li>Encrypt existing file: <code>ansible-vault encrypt secrets.yml</code></li>
+<li>Decrypt existing file: <code>ansible-vault encrypt secrets.yml</code></li>
+<li>Change password: <code>ansible-vault rekey secrets.yml</code></li>
+</ul>
+<p>See more: <a href="http://docs.ansible.com/ansible/playbooks_vault.html#running-a-playbook-with-vault">Ansible Vault</a></p>
+</section>
+<section id="using-vaulted-secrets" class="slide level1">
+<h1>Using vaulted secrets</h1>
+<pre><code>ansible-playbook playbook.yml --ask-vault-pass</code></pre>
+<p>You can also set the password in a file (e.g. ~/.ansible/vault_pass) and use</p>
+<pre><code>ansible-playbook playbook.yml --vault-password-file ~/.ansible/vault_pass</code></pre>
+<p>or set the <code>ANSIBLE_VAULT_PASSWORD_FILE</code> environment variable.</p>
+</section>
+<section id="lab" class="slide level1">
+<h1>Lab</h1>
+<ul>
+<li>Create a playbook on control that
+<ul>
+<li>uses the debug task to show amount of memory free on the target host</li>
+<li>runs a debug task if a variable <code>run_me</code> is set.</li>
+<li>Stores the contents of the results of listing the directory of <code>httpd_directory</code></li>
+</ul></li>
+</ul>
+</section>
+    </div>
+  </div>
 
 
+  <script src="reveal.js/lib/js/head.min.js"></script>
+  <script src="reveal.js/js/reveal.js"></script>
 
+  <script>
 
-# Lab
+      // Full list of configuration options available here:
+      // https://github.com/hakimel/reveal.js#configuration
+      Reveal.initialize({
+        controls: true,         // Display controls in the bottom right corner
+        progress: true,         // Display a presentation progress bar
+        history: true,          // Push each slide change to the browser history
+        center: true,                       // Vertical centering of slides
+        maxScale: 1.5,                  // Bounds for smallest/largest possible content scale
+        slideNumber: false,                // Display the page number of the current slide
+        theme: 'white', // available themes are in /css/theme
+        transition: Reveal.getQueryHash().transition || 'default', // default/cube/page/concave/zoom/linear/fade/none
 
-
-
----
-</script>
-
-
-  <script src="/assets/javascripts/p_slides.js"></script>
-  </body>
+        // Optional libraries used to extend on reveal.js
+        dependencies: [
+          { src: 'reveal.js/lib/js/classList.js', condition: function() { return !document.body.classList; } },
+          { src: 'reveal.js/plugin/zoom-js/zoom.js', async: true, condition: function() { return !!document.body.classList; } },
+          { src: 'reveal.js/plugin/notes/notes.js', async: true, condition: function() { return !!document.body.classList; } },
+//          { src: 'reveal.js/plugin/search/search.js', async: true, condition: function() { return !!document.body.classList; }, }
+//          { src: 'reveal.js/plugin/remotes/remotes.js', async: true, condition: function() { return !!document.body.classList; } }
+]});
+    </script>
+    </body>
 </html>
