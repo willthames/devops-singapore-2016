@@ -3,7 +3,9 @@
 <head>
   <meta charset="utf-8">
   <meta name="generator" content="pandoc">
-  <title></title>
+  <meta name="author" content="Will Thames" />
+  <meta name="dcterms.date" content="2016-10-09" />
+  <title>Ansible From Zero to Best Practices</title>
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
@@ -29,10 +31,14 @@
   <div class="reveal">
     <div class="slides">
 
+<section>
+    <h1 class="title">Ansible From Zero to Best Practices</h1>
+    <h2 class="author">Will Thames</h2>
+    <h3 class="date">09 October 2016</h3>
+</section>
 
-<section id="ansible-from-zero-to-best-practices" class="slide level1">
-<h1>Ansible From Zero to Best Practices</h1>
-<p>By Will Thames:</p>
+<section id="about-me" class="slide level1">
+<h1>About me</h1>
 <ul>
 <li>Senior Systems Engineer, Red Hat Brisbane</li>
 <li>Contributor to Ansible</li>
@@ -40,8 +46,8 @@
 <li>Mostly ansible-related blog at <a href="https://willthames.github.io/" class="uri">https://willthames.github.io/</a></li>
 </ul>
 </section>
-<section id="about-this-talk-1" class="slide level1">
-<h1>About this talk (1)</h1>
+<section id="workshop-contents" class="slide level1">
+<h1>Workshop Contents</h1>
 <ul>
 <li>Part 1: Introduction to Ansible</li>
 <li><a href="02-variables.html">Part 2: Ansible and variables</a></li>
@@ -49,8 +55,8 @@
 <li><a href="04-tools.html">Part 4: Ansible tools for best practices</a></li>
 </ul>
 </section>
-<section id="about-this-talk-2" class="slide level1">
-<h1>About this talk (2)</h1>
+<section id="about-this-workshop" class="slide level1">
+<h1>About this workshop</h1>
 <ul>
 <li>This workshop is untested (sorry)</li>
 <li>There might be mistakes</li>
@@ -80,8 +86,8 @@
 </ul></li>
 </ul>
 </section>
-<section id="why-use-ansible-1" class="slide level1">
-<h1>Why use Ansible (1)</h1>
+<section id="why-use-ansible" class="slide level1">
+<h1>Why use Ansible</h1>
 <ul>
 <li>Easy to install
 <ul>
@@ -96,38 +102,50 @@
 </ul></li>
 </ul>
 </section>
-<section id="why-use-ansible-2" class="slide level1">
-<h1>Why use Ansible (2)</h1>
+<section id="why-use-ansible-1" class="slide level1">
+<h1>Why use Ansible</h1>
 <ul>
 <li>Easy to do easy things with</li>
 <li>Not much harder to do hard things with</li>
 <li>Usually easy for others to understand what is going on</li>
 </ul>
 </section>
-<section id="getting-up-and-running-with-ansible" class="slide level1">
-<h1>Getting up and running with Ansible</h1>
+<section id="getting-started-with-ansible" class="slide level1">
+<h1>Getting started with Ansible</h1>
 <ul>
 <li>Install Ansible</li>
 <li>RHEL/CentOS/Fedora: <code>yum install ansible</code></li>
 <li>OS X: <code>brew install ansible</code></li>
-<li>Windows: doesn't install directly - use a VM or cygwin</li>
+<li>Windows: doesn't install directly — use a VM or cygwin</li>
 <li>Most platforms: <code>pip install ansible</code></li>
 </ul>
 </section>
-<section id="setting-up-target-hosts" class="slide level1">
-<h1>Setting up target hosts</h1>
+<section id="set-up-target-hosts" class="slide level1">
+<h1>Set up target hosts</h1>
 <p>Ansible is most easily used if you can ssh as a normal user to a host without a password, and then sudo to root without a password.</p>
 </section>
-<section id="setting-up-ssh-keys" class="slide level1">
-<h1>Setting up ssh keys</h1>
+<section id="set-up-ssh-keys" class="slide level1">
+<h1>Set up ssh keys</h1>
 <pre><code>ssh-keygen -f ansible
 ssh-add ~/.ssh/ansible
 ssh-copy-id -f ~/.ssh/ansible $targethost</code></pre>
 </section>
+<section id="demo-test-ping" class="slide level1">
+<h1>Demo: Test ping</h1>
+<p>Test with the <code>ping</code> module:</p>
+<pre><code>ansible -m ping target</code></pre>
+</section>
 <section id="setting-up-sudo" class="slide level1">
 <h1>Setting up sudo</h1>
-<pre><code>echo &quot;ansible_user (ALL) NOPASSWD: ALL&quot; &gt; /etc/sudoers.d/ansible</code></pre>
+<pre><code>echo &quot;ansible_user (ALL) NOPASSWD: ALL&quot; &gt; \
+  /etc/sudoers.d/ansible</code></pre>
 <p>In some cases you will want to lock this down further, perhaps with a password (you can enter a sudo password if you add <code>-K</code> to your command line).</p>
+</section>
+<section id="demo-test-sudo-setup" class="slide level1">
+<h1>Demo: Test sudo setup</h1>
+<pre><code>ansible -a whoami target
+ansible -a whoami -b target</code></pre>
+<p>(Note that <code>ansible</code> runs the <code>command</code> module by default so no <code>-m</code> is needed)</p>
 </section>
 <section id="basic-concepts" class="slide level1">
 <h1>Basic Concepts</h1>
@@ -145,10 +163,17 @@ ssh-copy-id -f ~/.ssh/ansible $targethost</code></pre>
 <section id="modules" class="slide level1">
 <h1>Modules</h1>
 <ul>
-<li><p>A single module allows the execution of a self-contained task.</p></li>
-<li>There are modules for an awful lot of things - e.g.:
+<li>A single module allows the execution of a self-contained task.</li>
+<li>Modules are designed to provide an abstraction around simple and complex tasks to allow them to be repeatable and handle error conditions nicely</li>
+<li>We've already briefly seen the <code>ping</code> and <code>command</code> modules.</li>
+</ul>
+</section>
+<section id="built-in-modules" class="slide level1">
+<h1>Built-in modules</h1>
 <ul>
-<li>configuring services in AWS</li>
+<li>There are modules for an awful lot of things — e.g.:
+<ul>
+<li>configuring services in AWS, Google, Azure, Openstack etc.</li>
 <li>installing OS packages</li>
 <li>writing to files</li>
 <li>updating network devices</li>
@@ -158,12 +183,17 @@ ssh-copy-id -f ~/.ssh/ansible $targethost</code></pre>
 </ul>
 <p>See the <a href="docs.ansible.com/ansible/modules_by_category.html">Ansible Module Index</a> for a full list of categories.</p>
 </section>
-<section id="example" class="slide level1">
-<h1>Example</h1>
-<p>Using the <code>ansible</code> command line, it's easy to run a simple module to get all of the facts from a repo</p>
+<section id="demo-ansible" class="slide level1">
+<h1>Demo: <code>ansible</code></h1>
+<p>Using the <code>ansible</code> command line utility, it's easy to run a simple module to get all of the facts from a repo</p>
 <pre><code>ansible -m setup target</code></pre>
 <p>or run an ad-hoc task</p>
 <pre><code>ansible -m file -a &quot;state=directory path=~/throwaway&quot; target</code></pre>
+</section>
+<section id="demo-ansible-doc" class="slide level1">
+<h1>Demo: <code>ansible-doc</code></h1>
+<p><code>ansible-doc</code> is very useful for finding the syntax of a module without having to look it up online</p>
+<p>e.g. <code>ansible-doc mysql_user</code></p>
 </section>
 <section id="playbooks" class="slide level1">
 <h1>Playbooks</h1>
@@ -183,7 +213,11 @@ ssh-copy-id -f ~/.ssh/ansible $targethost</code></pre>
 </section>
 <section id="naming-tasks" class="slide level1">
 <h1>Naming tasks</h1>
-<p>Best practices suggest always naming tasks - it's easier to follow what is happening if the tasks are well named.</p>
+<p>Best practices suggest always naming tasks — it's easier to follow what is happening if the tasks are well named.</p>
+<p>Naming tasks also allows the use of <code>--start-at-task</code> to allow ansible-playbook to start at a later point in the playbook</p>
+</section>
+<section id="naming-tasks-in-action" class="slide level1">
+<h1>Naming tasks in action</h1>
 <p>The task in the previous playbook looks like this when named:</p>
 <pre><code>TASK [ensure ~/throwaway doesn&#39;t exist] ****************************************
 ok: [target]</code></pre>
@@ -224,7 +258,7 @@ ok: [target]</code></pre>
 </section>
 <section id="task-modifiers-become" class="slide level1">
 <h1>Task modifiers: <code>become</code></h1>
-<p>The <code>become</code> modifiers are useful when you need a task to run as a different user to the rest of the playbook. Security best practices suggest using a standard user for most tasks and elevating privilege when required - but even if you're running the playbook as root, you might need to become e.g. the <code>postgres</code> user to run a DB related task.</p>
+<p>The <code>become</code> modifiers are useful when you need a task to run as a different user to the rest of the playbook. Security best practices suggest using a standard user for most tasks and elevating privilege when required — but even if you're running the playbook as root, you might need to become e.g. the <code>postgres</code> user to run a DB related task.</p>
 <p>See more: <a href="http://docs.ansible.com/ansible/become.html">Become</a></p>
 </section>
 <section id="become-example" class="slide level1">
@@ -232,6 +266,7 @@ ok: [target]</code></pre>
 <pre><code>- name: install package
   yum:
     name: httpd
+    state: present
   become: yes
 
 - name: connect to the database
@@ -241,11 +276,11 @@ ok: [target]</code></pre>
 <section id="best-practices-yaml" class="slide level1">
 <h1>Best practices: YAML</h1>
 <p>Note that the previous task could be written</p>
-<pre><code>    file: path=~/throwaway state=absent</code></pre>
+<pre><code>    yum: name=httpd state=present</code></pre>
 <p>Ansible have said that the preferred format is the YAML dictionary format, as the key=value form can lead to strange errors (we'll see this later with the <code>--syntax-check</code>er)</p>
 </section>
-<section id="structuring-playbooks-1" class="slide level1">
-<h1>Structuring playbooks (1)</h1>
+<section id="structuring-playbooks" class="slide level1">
+<h1>Structuring playbooks</h1>
 <p>There are a number of elements to a playbook, that can be separated into the following classes of elements:</p>
 <ul>
 <li>Connection specification: <code>hosts</code>, <code>forks</code>, <code>serial</code></li>
@@ -255,8 +290,8 @@ ok: [target]</code></pre>
 <li>Tasks and handlers: <code>tasks</code>, <code>handlers</code></li>
 </ul>
 </section>
-<section id="structuring-playbooks-2" class="slide level1">
-<h1>Structuring playbooks (2)</h1>
+<section id="structuring-playbooks-1" class="slide level1">
+<h1>Structuring playbooks</h1>
 <p>Playbooks can also include other playbooks, using <code>include</code> at the play level, or include task files by using the <code>include</code> task</p>
 <pre><code>- hosts: all
 
@@ -288,15 +323,19 @@ ok: [target]</code></pre>
 </section>
 <section id="repeatability" class="slide level1">
 <h1>Repeatability</h1>
-<p>If a playbook runs twice, the expected result is that nothing should change on the second run - ansible should report zero changes.</p>
+<p>If a playbook runs twice, the expected result is that nothing should change on the second run — ansible should report zero changes.</p>
 <p>This should be true whether 10 seconds later, or 10 months later.</p>
 </section>
-<section id="repeatability---command-tasks" class="slide level1">
-<h1>Repeatability - command tasks</h1>
+<section id="repeatability-command-tasks" class="slide level1">
+<h1>Repeatability — command tasks</h1>
 <ul>
 <li>In particular, <code>shell</code> and <code>command</code> will always return <code>changed: True</code>. Use of <code>changed_when: False</code> when running read-only commands is encouraged to minimise false alarms:</li>
 </ul>
-<p><code>- name: get list of files in a directory       command: ls /path/to/directory       register: directory_contents       changed_when: false       always_run: true</code></p>
+<pre><code>    - name: get list of files in a directory
+      command: ls /path/to/directory
+      register: directory_contents
+      changed_when: false
+      check_mode: true</code></pre>
 </section>
 <section id="command-tasks" class="slide level1">
 <h1>Command tasks</h1>
@@ -304,29 +343,49 @@ ok: [target]</code></pre>
 <li>Other means of reducing the amount of unnecessary changes:
 <ul>
 <li>use <code>creates</code> or <code>removes</code> with commands to prevent an action happening if it's already happened</li>
-<li>use <code>when</code> with a pre-check read-only task (with <code>changed_when: False</code>) to see if an action needs to happen before doing it - e.g.</li>
+<li>use <code>when</code> with a pre-check read-only task (with <code>changed_when: False</code>) to see if an action needs to happen before doing it</li>
+</ul></li>
 </ul>
-<p>``` - name: check tuned profile command: tuned-adm active register: tuned_adm changed_when: False</p>
-<pre><code>- name: set tuned profile
+</section>
+<section id="command-pre-check-example" class="slide level1">
+<h1>Command pre-check example</h1>
+<pre><code>- name: check tuned profile
+  command: tuned-adm active
+  register: tuned_adm
+  changed_when: False
+
+- name: set tuned profile
   command: tuned-adm profile virtual-guest
-  when: &quot;&#39;Current active profile: virtual-guest&#39; not in tuned-adm.stdout&quot;</code></pre>
-<p>```</p></li>
-</ul>
+  when: &quot;&#39;Current active profile: virtual-guest&#39; \
+         not in tuned-adm.stdout&quot;</code></pre>
 </section>
 <section id="templates" class="slide level1">
 <h1>Templates</h1>
 <ul>
-<li>Templates allow you to generate configuration files from values set in various inventory properties. This means that you can store one template in source control that applies to many different environments.</li>
+<li><p>Templates allow you to generate configuration files from values set in various inventory properties. This means that you can store one template in source control that applies to many different environments.</p></li>
+<li><p>Ansible uses the <a href="http://jinja.pocoo.org">Jinja</a> templating language. The language offers control structures (<code>{% for %}</code>, <code>{% if %}</code> etc.) and filters that process variables (e.g.<code>{{ &quot;hello&quot;|upper }}</code> would print <code>HELLO</code>.</p></li>
+</ul>
+</section>
+<section id="template-example" class="slide level1">
+<h1>Template example</h1>
+<ul>
 <li>An example might be a file specifying database connection information that would have the same structure but different values for dev, test and prod environments</li>
 </ul>
-<pre><code>db.settings={{dbhost}}:{{dbport}}/{{dbuser}}:{{dbpass}}@{{dbschema}}</code></pre>
+<pre><code>  $db_host = &#39;{{ database_host }}&#39;;
+  $db_name = &#39;{{ database_name }}&#39;;
+  $db_user = &#39;{{ database_username }}&#39;;
+  $db_pass = &#39;{{ database_password }}&#39;;
+  $db_port = {{ database_port}};</code></pre>
+</section>
+<section id="using-templates" class="slide level1">
+<h1>Using templates</h1>
 <p>Templates are populated using</p>
 <pre><code>  - template:
       src: path/to/template.j2
       dest: /path/to/result</code></pre>
 </section>
-<section id="best-practice-use-directory-structure-with-templates" class="slide level1">
-<h1>Best practice: use directory structure with templates</h1>
+<section id="template-directory-structure" class="slide level1">
+<h1>Template directory structure</h1>
 <p>Because configuration files for an application can end up with similar names in different directories, reflect the target destination in the source repository</p>
 <pre><code>- name: configure logrotate
   template:
@@ -358,7 +417,7 @@ ok: [target]</code></pre>
 <section id="handlers-1" class="slide level1">
 <h1>Handlers</h1>
 <p>This is another mechanism of ensuring a change is made only when it needs to be (as if no change is made to the configuration, the handler will not fire)</p>
-<p>Handlers are run at the end of all tasks - if you want to run them earlier, you can use the <code>meta</code> task:</p>
+<p>Handlers are run at the end of all tasks — if you want to run them earlier, you can use the <code>meta</code> task:</p>
 <pre><code>- meta: flush_handlers</code></pre>
 </section>
 <section id="lab" class="slide level1">
@@ -368,19 +427,19 @@ ok: [target]</code></pre>
 <li><p>Log on to the control VM</p></li>
 <li><p>Have a look in playbooks/simple</p></li>
 <li><p>Run the deploy-web-service.yml playbook</p></li>
-<li><p>Visit http://192.168.33.11:8000/</p></li>
+<li><p>Visit <a href="http://192.168.33.11:8000/" class="uri">http://192.168.33.11:8000/</a></p></li>
 </ul>
 </section>
-<section id="troubleshooting-verbose-mode" class="slide level1">
-<h1>Troubleshooting: verbose mode</h1>
-<p>Adding extra <code>-v</code> arguments (using <code>-v -v -v</code> or just <code>-vvv</code>) will increase the verbosity of ansible's output.</p>
+<section id="verbose-mode" class="slide level1">
+<h1>Verbose mode</h1>
+<p>Adding extra <code>-v</code> arguments will increase the verbosity of ansible's output.</p>
 <ul>
-<li>No <code>-v</code> - just output tasks and plays and whether or not it's successful</li>
-<li><code>-v</code> - shows the results of modules</li>
-<li><code>-vv</code> - shows the files from which tasks come</li>
-<li><code>-vvv</code> - shows what commands are being executed under the hood on the target machine</li>
-<li><code>-vvvv</code> - shows what callbacks have been loaded</li>
-<li><code>-vvvvv</code> - shows some additional ssh configuration information</li>
+<li>No <code>-v</code> — just output tasks and plays and whether or not it's successful</li>
+<li><code>-v</code> — shows the results of modules</li>
+<li><code>-vv</code> — shows the files from which tasks come</li>
+<li><code>-vvv</code> — shows what commands are being executed under the hood on the target machine</li>
+<li><code>-vvvv</code> — shows what callbacks have been loaded</li>
+<li><code>-vvvvv</code> — shows some additional ssh configuration information</li>
 </ul>
 </section>
 <section id="best-practice-debug-messages" class="slide level1">
@@ -428,11 +487,30 @@ library = ./library
 filter_plugins = ./plugins/filter
 lookup_plugins = ./plugins/lookup
 callback_whitelist = profile_tasks,timer
-command_warnings = True
 
 [ssh_connection]
 pipelining = True
 control_path = %(directory)s/ssh-%%h-%%p-%%r</code></pre>
+</section>
+<section id="configuration-explanation" class="slide level1">
+<h1>Configuration explanation</h1>
+<ul>
+<li><code>hostfile = ./inventory</code> allows inventory to be stored next to the playbooks it is for</li>
+<li><code>library = ./library</code> allows the easy installation of custom modules near the code (useful if a module is not available from Ansible or a bug has been fixed for a newer/unreleased version)</li>
+<li><code>filter_plugins = ./plugins/filter</code> — allows for addition of new plugins for Jinja templating</li>
+<li><code>callback_whitelist = profile_tasks,timer</code> turns on timing information for individual tasks and for the playbook run as a whole</li>
+</ul>
+</section>
+<section id="configuration-explanation-1" class="slide level1">
+<h1>Configuration explanation</h1>
+<ul>
+<li><code>pipelining = True</code> speeds up the execution of modules as ansible only has to run one ssh command, not three.</li>
+<li><code>control_path</code> reduces the length of the default setting, which is useful if you have long hostnames (as the setting can only be 106 characters)</li>
+</ul>
+</section>
+<section id="end-of-part-1" class="slide level1">
+<h1>End of Part 1</h1>
+<p><a href="02-variables.html">Proceed to Part 2</a></p>
 </section>
     </div>
   </div>

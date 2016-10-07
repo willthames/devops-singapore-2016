@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="generator" content="pandoc">
-  <title></title>
+  <title>Part 3: Roles</title>
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
@@ -29,13 +29,17 @@
   <div class="reveal">
     <div class="slides">
 
+<section>
+    <h1 class="title">Part 3: Roles</h1>
+    <h3 class="date"></h3>
+</section>
 
 <section id="what-is-a-role" class="slide level1">
 <h1>What is a role</h1>
 <ul>
-<li>Roles can do most of the things that playbooks do - run tasks and handlers, install files or write templates, set variables</li>
-<li>Allows reusable implementation of common patterns.</li>
-<li>Examples include roles that install database engines (mysql, postgresql etc.), web servers (apache, nginx) and many more.</li>
+<li>Roles are reusable packages of configuration included by playbooks</li>
+<li>Roles can do most of the things that playbooks do — run tasks and handlers, install files or write templates, set variables</li>
+<li>Examples include roles that install database engines (mysql, postgresql etc.), web servers (apache, nginx) and many more</li>
 </ul>
 </section>
 <section id="why-do-we-have-roles" class="slide level1">
@@ -48,48 +52,44 @@
 <section id="where-do-roles-come-from" class="slide level1">
 <h1>Where do roles come from</h1>
 <ul>
-<li>Ansible Galaxy (https://galaxy.ansible.com/) - there are 1000s of roles suitable for most operating systems.</li>
+<li>Ansible Galaxy (<a href="http://galaxy.ansible.com/" class="uri">http://galaxy.ansible.com/</a>) — there are 1000s of roles suitable for most operating systems</li>
 <li><code>ansible-galaxy init new-role</code> creates a role skeleton</li>
 </ul>
 </section>
 <section id="ansible-role-skeleton" class="slide level1">
 <h1>Ansible role skeleton</h1>
 <pre><code>testrole/
-├── defaults
-│   └── main.yml
-├── files
-├── handlers
-│   └── main.yml
-├── meta
-│   └── main.yml
-├── README.md
-├── tasks
-│   └── main.yml
-├── templates
-├── tests
-│   ├── inventory
-│   └── test.yml
-└── vars
-    └── main.yml</code></pre>
+├── defaults         ├── tasks
+│   └── main.yml     │   └── main.yml
+├── files            ├── templates
+├── handlers         ├── tests
+│   └── main.yml     │   ├── inventory
+├── meta             │   └── test.yml
+│   └── main.yml     └── vars
+└── README.md            └── main.yml</code></pre>
 </section>
 <section id="installing-a-role" class="slide level1">
 <h1>Installing a role</h1>
 <ul>
-<li><p>Best practice is to use a requirements.yml containing the specification of the role you wish to use. This can be from <a href="https://galaxy.ansible.com">Ansible Galaxy</a> or from github or your own internal source repository.</p></li>
-<li><p>The following are effectively equivalent:</p>
+<li>Best practice is to use a <code>requirements.yml</code> file containing the specification of the role you wish to use. This can be from <a href="https://galaxy.ansible.com">Ansible Galaxy</a> or from github or your own internal source repository.</li>
+</ul>
+</section>
+<section id="requirements.yml" class="slide level1">
+<h1>requirements.yml</h1>
+<p>The following are effectively equivalent:</p>
 <pre><code>- src: geerlingguy.mysql
 
 - src: https://github.com/geerlingguy/ansible-role-mysql
   version: 2.4.0
   name: mysql
-  scm: git</code></pre></li>
-</ul>
+  scm: git</code></pre>
 <p>The latter mechanism is more useful for roles that don't come from galaxy.</p>
 </section>
 <section id="installing-a-role-1" class="slide level1">
 <h1>Installing a role</h1>
 <p>The roles are then installed using</p>
-<pre><code>ansible-galaxy install -r playbooks/application/env/requirements.yml -p playbooks/application/env/roles -f</code></pre>
+<pre><code>ansible-galaxy install -p playbooks/application/env/roles \
+  -r playbooks/application/env/requirements.yml -f</code></pre>
 </section>
 <section id="using-a-role" class="slide level1">
 <h1>Using a role</h1>
@@ -97,31 +97,42 @@
 <li><p>Read the README file to see what variables are expected, and then set them appropriately in inventory.</p></li>
 <li><p>Rather than a bunch of tasks, your playbook might then look like</p></li>
 </ul>
-<p>``` - hosts: appserver</p>
-<pre><code>roles:
-- mysql
-- nginx
-- application</code></pre>
-<p>```</p>
+<pre><code>  - hosts: appserver
+
+    roles:
+    - mysql
+    - nginx
+    - application</code></pre>
 <p>where <code>application</code> might be your role that installs your own application</p>
 </section>
 <section id="creating-new-roles" class="slide level1">
 <h1>Creating new roles</h1>
 <ul>
-<li>We use Ansible's <a href="http://docs.ansible.com/galaxy.html">Galaxy</a> functionality for managing internal roles (<code>ansible-galaxy init</code> for creating new roles, <code>ansible-galaxy install</code> for installing existing roles)</li>
-<li>Each role has its own source control repo</li>
+<li>The <code>ansible-galaxy init rolename</code> (http://docs.ansible.com/galaxy.html) command can be use to create new roles</li>
 <li>Each application-environment combination gets its own roles file used to provide roles for the playbooks</li>
-<li>The roles directories for the playbooks are ignored by git</li>
+</ul>
+</section>
+<section id="roles-playbooks-source-control" class="slide level1">
+<h1>Roles, playbooks, source control</h1>
+<ul>
+<li>We keep each role in its own source control repo for ease of software development and version management.</li>
+<li>Recommend naming the repo <code>rolename-role</code> or even <code>ansible-role-rolename</code> to avoid clashes (you can choose what name a role gets in the requirements file</li>
+<li>Add the roles directories for the playbooks to the <code>.gitignore</code> file (or similar for your source control)</li>
 </ul>
 </section>
 <section id="versioning-roles" class="slide level1">
 <h1>Versioning roles</h1>
-<p>There are some good reasons to version roles: * Allows safe development of roles without enforcing strict backward compatibility - older playbooks can continue to use older versions of a role until it is ready to upgrade. * Versioning allows repeatability - if the same playbook with the same rolesfile is used in 6 months time, it should work in exactly the same way. This would not be the case if a playbook just used the latest versions of the role.</p>
+<p>There are some good reasons to version roles:</p>
+<ul>
+<li>Allows safe development of roles without enforcing strict backward compatibility — older playbooks can continue to use older versions of a role until it is ready to upgrade.</li>
+<li>Versioning allows repeatability — if the same playbook with the same rolesfile is used in 6 months time, it should work in exactly the same way. This would not be the case if a playbook just used the latest versions of the role.</li>
+</ul>
 </section>
 <section id="how-we-version-roles" class="slide level1">
 <h1>How we version roles</h1>
 <ul>
-<li>Roles used in production are tagged --- production playbooks must use versioned roles, and production roles must have versions.</li>
+<li>Production playbooks must use versioned roles</li>
+<li>Production roles must have versions.</li>
 <li>Once a change to a role has passed code review and is accepted on the master branch:</li>
 </ul>
 <pre><code>git pull upstream master
@@ -135,6 +146,10 @@ git push upstream v2.3</code></pre>
 database_user: shop
 database_password: sh0p</code></pre>
 <p>A starting playbook exists in playbooks/with_roles/install_db.yml, you'll need to install the role, and set up the inventory.</p>
+</section>
+<section id="end-of-part-3" class="slide level1">
+<h1>End of Part 3</h1>
+<p><a href="04-tools.html">Proceed to Part 4</a></p>
 </section>
     </div>
   </div>

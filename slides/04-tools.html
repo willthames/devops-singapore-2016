@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="generator" content="pandoc">
-  <title></title>
+  <title>Part 4: Tools</title>
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
@@ -29,15 +29,23 @@
   <div class="reveal">
     <div class="slides">
 
+<section>
+    <h1 class="title">Part 4: Tools</h1>
+    <h3 class="date"></h3>
+</section>
 
-<section id="part-4-tools" class="slide level1">
-<h1>Part 4: Tools</h1>
+<section id="tools-for-best-practices" class="slide level1">
+<h1>Tools for best practices</h1>
+<ul>
+<li>Continuous integration:
 <ul>
 <li>syntax check</li>
-<li>diff mode</li>
-<li><code>ansible-doc</code></li>
 <li><code>ansible-lint</code></li>
+</ul></li>
+<li>Code review
+<ul>
 <li><code>ansible-review</code></li>
+</ul></li>
 </ul>
 </section>
 <section id="syntax-check" class="slide level1">
@@ -56,37 +64,41 @@ The offending line appears to be:
     debug: msg=&quot;hello: world&quot;
                      ^ here</code></pre>
 </section>
-<section id="ansible-doc" class="slide level1">
-<h1>ansible-doc</h1>
-<p><code>ansible-doc</code> is very useful for finding the syntax of a module without having to look it up online</p>
-<p>e.g. <code>ansible-doc mysql_user</code></p>
-</section>
 <section id="ansible-lint" class="slide level1">
 <h1>ansible-lint</h1>
 <p><code>ansible-lint</code> was developed to find various style and usage issues with playbooks and roles, and suggest improvements.</p>
-<p>There are several categories of rules * Using command/shell module instead of Ansible modules * Deprecated syntax that is being removed by Ansible * Incorrect formatting</p>
+<p>There are several categories of rules:</p>
+<ul>
+<li>Using command/shell module instead of Ansible modules</li>
+<li>Deprecated syntax that is being removed by Ansible</li>
+<li>Incorrect formatting</li>
+</ul>
 </section>
 <section id="ansible-lint-1" class="slide level1">
 <h1>ansible-lint</h1>
-<p>Every rule is treated as an error - there is no way to mark rules as warnings. You can choose to run specific rules or to exclude specific rules</p>
+<p>Every rule is treated as an error — there is no way to mark rules as warnings. You can choose to run specific rules or to exclude specific rules</p>
+</section>
+<section id="code-reviews" class="slide level1">
+<h1>Code Reviews</h1>
+<p>Code reviews are essential to maintaining codebase quality. We use code reviews to check for standards compliance and best practices, and also to ensure that the change is the right thing to do for future maintenance.</p>
+<p>Reviews should be objective - there should be a documented reason for comments made in a review.</p>
+</section>
+<section id="code-reviews-1" class="slide level1">
+<h1>Code Reviews</h1>
+<p>Code reviews can lead to less code in the codebase. This can be a good thing. By spotting common patterns, functionality that is in a common role can be removed from an application role (roles do not need to install apache themselves when they can rely on the apache role, for example).</p>
+<p>Conversely, code that is specific to an application should be kept away from the more general roles.</p>
 </section>
 <section id="standards-and-best-practices" class="slide level1">
 <h1>Standards and Best Practices</h1>
 <ul>
-<li>Our standards, best practices, guide to code reviews etc. are in version control</li>
-<li>Our standards documentation is improved using a similar review process to our code. This is so that standards are agreed, and not imposed.</li>
+<li>We keep our standards, best practices, guide to code reviews etc. in version control</li>
+<li>Our standards documentation goes through a similar review process to our code. This is so that standards are agreed, and not imposed.</li>
 <li>Standards have a version number and a changelog, so that it's obvious what standards have been added, improved or even removed over time.</li>
 </ul>
 </section>
-<section id="code-reviews" class="slide level1">
-<h1>Code Reviews</h1>
-<p>Code reviews are essential to maintaining the high quality of our codebase. We use code reviews to check for standards compliance and best practices, and also to ensure that the change is the right thing to do for future maintenance.</p>
-<p>Code reviews can lead to less code in the codebase. This can be a good thing. By spotting common patterns, functionality that is in a common role can be removed from an application role (roles do not need to install apache themselves when they can rely on the apache role, for example).</p>
-<p>Conversely, code that is specific to an application should be kept away from the more general roles.</p>
-</section>
 <section id="ansible-review" class="slide level1">
 <h1>ansible-review</h1>
-<p>ansible-review is designed to apply an automated code review process to work with an organisation's standards.</p>
+<p><code>ansible-review</code> is designed to apply an automated code review process to work with an organisation's standards.</p>
 <p>As you add new standards to your style guide, you can say what version of standards a playbook or role is designed to meet. This allows older code to not fail against newer standards.</p>
 </section>
 <section id="running-a-review" class="slide level1">
@@ -96,6 +108,24 @@ The offending line appears to be:
 <pre><code>git ls-files | xargs ansible-review</code></pre>
 <p>or</p>
 <pre><code>git diff master | ansible-review</code></pre>
+</section>
+<section id="end-of-the-workshop" class="slide level1">
+<h1>End of the Workshop!</h1>
+<p>Further resources:</p>
+<ul>
+<li><a href="http://docs.ansible.com/ansible/">Ansible Docs</a></li>
+<li><a href="https://github.com/ansible/ansible">Ansible source</a></li>
+<li><a href="https://groups.google.com/forum/!ansible-project">Ansible Mailing list</a></li>
+<li><a href="http://galaxy.ansible.com">Ansible Galaxy</a></li>
+</ul>
+</section>
+<section id="thank-you" class="slide level1">
+<h1>Thank you!</h1>
+<p>Feedback welcomed (positive and negative)</p>
+<ul>
+<li>Twitter: <span class="citation" data-cites="willthames">@willthames</span></li>
+<li>Email: will@thames.id.au</li>
+</ul>
 </section>
     </div>
   </div>
