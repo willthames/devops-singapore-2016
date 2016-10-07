@@ -1,7 +1,9 @@
 % Part 4: Tools
 
 ---
+
 # Tools for best practices
+
 * Continuous integration:
     * syntax check
     * `ansible-lint`
@@ -38,7 +40,8 @@ The offending line appears to be:
 `ansible-lint` was developed to find various style and usage issues
 with playbooks and roles, and suggest improvements.
 
-There are several categories of rules
+There are several categories of rules:
+
 * Using command/shell module instead of Ansible modules
 * Deprecated syntax that is being removed by Ansible
 * Incorrect formatting
@@ -47,28 +50,25 @@ There are several categories of rules
 
 # ansible-lint
 
-Every rule is treated as an error - there is no way to
+Every rule is treated as an error &mdash; there is no way to
 mark rules as warnings. You can choose to run specific
 rules or to exclude specific rules
 
----
-
-# Standards and Best Practices
-
-* Our standards, best practices, guide to code reviews etc. are in version
-  control
-* Our standards documentation is improved using a similar review process to our
-  code. This is so that standards are agreed, and not imposed.
-* Standards have a version number and a changelog, so that it's obvious what
-  standards have been added, improved or even removed over time.
 
 ---
 
 # Code Reviews
 
-Code reviews are essential to maintaining the high quality of our codebase. We
+Code reviews are essential to maintaining codebase quality. We
 use code reviews to check for standards compliance and best practices, and also
 to ensure that the change is the right thing to do for future maintenance.
+
+Reviews should be objective - there should be a documented reason for
+comments made in a review.
+
+---
+
+# Code Reviews
 
 Code reviews can lead to less code in the codebase. This can be a good thing. By
 spotting common patterns, functionality that is in a common role can be removed
@@ -77,6 +77,17 @@ they can rely on the apache role, for example).
 
 Conversely, code that is specific to an application should be kept away from the
 more general roles.
+
+---
+
+# Standards and Best Practices
+
+* We keep our standards, best practices, guide to code reviews etc. in version
+  control
+* Our standards documentation goes through a similar review process to our
+  code. This is so that standards are agreed, and not imposed.
+* Standards have a version number and a changelog, so that it's obvious what
+  standards have been added, improved or even removed over time.
 
 ---
 

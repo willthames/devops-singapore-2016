@@ -1,9 +1,7 @@
-// .reveal h1 { font-size: 2.9em !important; }
 .reveal li { margin: 10px 0 !important; }
-// .reveal a, 
-// .reveal a:hover { color: yellow !important; }
 .reveal figcaption { display: none !important; }
-.reveal p, .reveal ul { text-align: left; }
+.reveal p, .reveal ul { text-align: left;}
+.reveal ul { width: 90% }
 .reveal pre code { font-size: 24px; line-height: 1.2; }
 .reveal h1 { text-transform: none !important; }
 .reveal h1 code { font-weight: normal; letter-spacing: 0.8 }

@@ -85,7 +85,7 @@
 * Install Ansible
   - RHEL/CentOS/Fedora: `yum install ansible`
   - OS X: `brew install ansible`
-  - Windows: doesn't install directly - use a VM or cygwin
+  - Windows: doesn't install directly &mdash; use a VM or cygwin
   - Most platforms: `pip install ansible`
 
 ---
@@ -169,7 +169,7 @@ so no `-m` is needed)
 ---
 
 # Built-in modules
-* There are modules for an awful lot of things - e.g.:
+* There are modules for an awful lot of things &mdash; e.g.:
     * configuring services in AWS, Google, Azure, Openstack etc.
     * installing OS packages
     * writing to files
@@ -237,7 +237,7 @@ others.
 
 # Naming tasks
 
-Best practices suggest always naming tasks -
+Best practices suggest always naming tasks &mdash;
 it's easier to follow what is happening if the
 tasks are well named.
 
@@ -316,7 +316,7 @@ See more: [Ansible Loops](http://docs.ansible.com/ansible/playbooks_loops.html)
 The `become` modifiers are useful when you need a task to run
 as a different user to the rest of the playbook. Security best
 practices suggest using a standard user for most tasks and
-elevating privilege when required - but even if you're running
+elevating privilege when required &mdash; but even if you're running
 the playbook as root, you might need to become e.g. the `postgres`
 user to run a DB related task.
 
@@ -427,26 +427,26 @@ be run by passing `-D` or `--diff-mode` to `ansible-playbook`
 # Repeatability
 
 If a playbook runs twice, the expected result is that nothing
-should change on the second run - ansible should report
+should change on the second run &mdash; ansible should report
 zero changes.
 
 This should be true whether 10 seconds later, or 10 months later.
 
 ---
 
-# Repeatability - command tasks
+# Repeatability &mdash; command tasks
 
 * In particular, `shell` and `command` will always return `changed: True`. Use
   of `changed_when: False` when running read-only commands is encouraged
   to minimise false alarms:
 
-  ```
+```
     - name: get list of files in a directory
       command: ls /path/to/directory
       register: directory_contents
       changed_when: false
-      always_run: true
-  ```
+      check_mode: true
+```
 
 ---
 
@@ -457,18 +457,23 @@ This should be true whether 10 seconds later, or 10 months later.
       if it's already happened
     - use `when` with a pre-check read-only task (with `changed_when: False`)
       to see if an action needs to happen before
-      doing it - e.g.
+      doing it
 
-      ```
-        - name: check tuned profile
-          command: tuned-adm active
-          register: tuned_adm
-          changed_when: False
+---
 
-        - name: set tuned profile
-          command: tuned-adm profile virtual-guest
-          when: "'Current active profile: virtual-guest' not in tuned-adm.stdout"
-      ```
+# Command pre-check example
+
+```
+- name: check tuned profile
+  command: tuned-adm active
+  register: tuned_adm
+  changed_when: False
+
+- name: set tuned profile
+  command: tuned-adm profile virtual-guest
+  when: "'Current active profile: virtual-guest' \
+         not in tuned-adm.stdout"
+```
 
 ---
 
@@ -477,13 +482,30 @@ This should be true whether 10 seconds later, or 10 months later.
 - Templates allow you to generate configuration files from values set in
   various inventory properties. This means that you can store one template in
   source control that applies to many different environments.
+
+- Ansible uses the [Jinja](http://jinja.pocoo.org) templating language. The
+  language offers control structures (`{% for %}`, `{% if %}` etc.) and
+  filters that process variables (e.g.`{{ "hello"|upper }}` would print `HELLO`.
+
+---
+
+# Template example
+
 - An example might
   be a file specifying database connection information that would have the same
   structure but different values for dev, test and prod environments
 
 ```
-db.settings={{dbhost}}:{{dbport}}/{{dbuser}}:{{dbpass}}@{{dbschema}}
+  $db_host = '{{ database_host }}';
+  $db_name = '{{ database_name }}';
+  $db_user = '{{ database_username }}';
+  $db_pass = '{{ database_password }}';
+  $db_port = {{ database_port}};
 ```
+
+---
+
+# Using templates
 
 Templates are populated using
 
@@ -495,7 +517,7 @@ Templates are populated using
 
 ---
 
-# Best practice: use directory structure with templates
+# Template directory structure
 
 Because configuration files for an application can end
 up with similar names in different directories, reflect
@@ -545,7 +567,7 @@ is made only when it needs to be (as if no
 change is made to the configuration, the
 handler will not fire)
 
-Handlers are run at the end of all tasks -
+Handlers are run at the end of all tasks &mdash;
 if you want to run them earlier, you can
 use the `meta` task:
 
@@ -567,23 +589,23 @@ use the `meta` task:
 
 * Run the deploy-web-service.yml playbook
 
-* Visit http://192.168.33.11:8000/
+* Visit [http://192.168.33.11:8000/](http://192.168.33.11:8000/)
 
 ---
 
-# Troubleshooting: verbose mode
+# Verbose mode
 
-Adding extra `-v` arguments (using `-v -v -v` or just `-vvv`)
-will increase the verbosity of ansible's output.
+Adding extra `-v` arguments will increase the verbosity of
+ansible's output.
 
-* No `-v` - just output tasks and plays and whether
+* No `-v` &mdash; just output tasks and plays and whether
   or not it's successful
-* `-v` - shows the results of modules
-* `-vv` - shows the files from which tasks come
-* `-vvv` - shows what commands are being executed under the
+* `-v` &mdash; shows the results of modules
+* `-vv` &mdash; shows the files from which tasks come
+* `-vvv` &mdash; shows what commands are being executed under the
   hood on the target machine
-* `-vvvv` - shows what callbacks have been loaded
-* `-vvvvv` - shows some additional ssh configuration information
+* `-vvvv` &mdash; shows what callbacks have been loaded
+* `-vvvvv` &mdash; shows some additional ssh configuration information
 
 ---
 
@@ -653,12 +675,42 @@ library = ./library
 filter_plugins = ./plugins/filter
 lookup_plugins = ./plugins/lookup
 callback_whitelist = profile_tasks,timer
-command_warnings = True
 
 [ssh_connection]
 pipelining = True
 control_path = %(directory)s/ssh-%%h-%%p-%%r
 ```
+
+---
+
+# Configuration explanation
+
+* `hostfile = ./inventory` allows inventory to
+  be stored next to the playbooks it is for
+* `library = ./library` allows the easy installation
+  of custom modules near the code (useful if a module
+  is not available from Ansible or a bug has been fixed
+  for a newer/unreleased version)
+
+---
+
+# Configuration explanation
+
+* `filter_plugins = ./plugins/filter` &mdash; allows for
+  addition of new plugins for Jinja templating
+* `callback_whitelist = profile_tasks,timer` turns
+  on timing information for individual tasks and for
+  the playbook run as a whole
+
+---
+
+# Configuration explanation
+
+* `pipelining = True` speeds up the execution of modules
+  as ansible only has to run one ssh command, not three.
+* `control_path` reduces the length of the default
+  setting, which is useful if you have long hostnames
+  (as the setting can only be 106 characters)
 
 ---
 

@@ -34,6 +34,7 @@ are available to the rest of the playbook.
   and `group_vars` stored in the inventory directory
 
 ---
+
 # Inventory inheritance
 * Inventory variables take precedence the closer they are to the host.
 * Host variables override group variables
@@ -63,6 +64,8 @@ Run
 ```
 ansible-playbook playbooks/simple/add-inventory-graph.yml
 ```
+
+Visit [http://192.168.33.11:8000/target.png](http://192.168.33.11:8000/target.png)
 
 ---
 
@@ -94,10 +97,15 @@ ansible-playbook playbooks/simple/add-inventory-graph.yml
   candidates, but most other inventory variables
   will be properties of groups.
 
-* Variables should not be stored in inventory host files (using `[group:vars]`
-  or `[host:vars]` mechanism) - the inventory files should be used for group
-  ontents and hierarchy definitions (using `[group:children]`).
-  This is to avoid confusion about where variables might be set.
+---
+
+# Anti-pattern: variables in host files
+
+* Variables should not be stored in inventory host
+  files (using `[group:vars]` or `[host:vars]` mechanism)
+  &mdash; the inventory files should be used for group
+  contents and hierarchy definitions (using `[group:children]`).
+* Use `group_vars` instead, or `host_vars` at a push.
 
 ---
 
@@ -107,7 +115,7 @@ In general playbooks shouldn't need to define
 vars, but the capability exists.
 
 `vars_prompt` is useful if you need to provide
-a variable at run time - e.g. a password for a
+a variable at run time &mdash; e.g. a password for a
 service and don't want to
 source it from a vaulted file.
 
@@ -122,7 +130,8 @@ source it from a vaulted file.
 
   tasks:
   - name: sign certificate
-    command: openssl ca -in req.pem -out newcert.pem -passin env:CA_PASSWD
+    command: openssl ca -in req.pem \
+      -out newcert.pem -passin env:CA_PASSWD
     environment:
       CA_PASSWD: "{{ ca_password }}"
 ```
@@ -134,7 +143,7 @@ source it from a vaulted file.
 * `register`ed variables used to store the
    results of a task in a playbook.
 
-   ```
+```
    - name: get stat data for file
      stat:
        path: /path/to/file
@@ -144,7 +153,7 @@ source it from a vaulted file.
      fail:
        msg: "File does not exist"
      when: not stat_file.stat.exists
-   ```
+```
 
 ---
 
@@ -154,12 +163,12 @@ source it from a vaulted file.
   at runtime, e.g. IP address or OS version.
 
 * You don't need to run the `setup` module
-  directly to gather facts - it is always run
+  directly to gather facts &mdash; it is always run
   in playbook mode, unless `gather_facts` is
   set to `False`
 
 * If you ran the previous lab, you should be able
-  to see the facts for `target` at http://192.168.33.11:8000/
+  to see the facts for `target` at [http://192.168.33.11:8000/](http://192.168.33.11:8000/)
 
 ---
 
@@ -169,31 +178,36 @@ source it from a vaulted file.
   facts from existing facts to produce more
   useful ones.
 
-  ```
-  - name: set OS version fact
+```
+  - name: set timezone fact
     set_fact:
     args:
-      os_version: "{{ansible_distribution}}{{ansible_distribution_major_version}}"
-  ```
+      timezone: "{{ ansible_date_time.tz }}"
+```
 
 ---
 
 # `set_fact` examples
 
+If `os_version` is the fact obtained by
+joining `ansible_distribution` with
+`ansible_distribution_major_version` then:
+
 * The following will look under the `vars`
   directory of a role for a file called e.g. `CentOS7.yml`
-  ```
+
+```
   - name: include variables based on OS version
     include_vars: "{{ os_version }}.yml"
-  ```
+```
 
 * The following will look under the `tasks`
   directory of a role for a file called e.g. `CentOS7.yml`
 
-  ```
+```
   - name: run tasks based on OS version
     include: "{{ os_version }}.yml"
-  ```
+```
 
 
 ---
@@ -222,7 +236,7 @@ source it from a vaulted file.
 * Command line extra vars are useful for
   setting configuration at run-time.
 * Set lots of variables at once by including
-  a variables file using `-e @filename.yml` -
+  a variables file using `-e @filename.yml` &mdash;
   can be useful for overriding defaults during
   an outage.
 
@@ -232,8 +246,8 @@ source it from a vaulted file.
 
 The order of variables presented has been
 in increasing order. There are more variable
-types than presented here - others aren't
-highly recommended
+types than presented here &mdash; others aren't
+widely used or highly recommended
 
 See more: [Ansible Variable precedence](http://docs.ansible.com/ansible/playbooks_variables.html#variable-precedence-where-should-i-put-a-variable)
 
@@ -241,8 +255,8 @@ See more: [Ansible Variable precedence](http://docs.ansible.com/ansible/playbook
 
 # Secret variables
 
-Ansible provides a tool called `ansible-vault`
-for encrypting secret variables. While other
+ansible provides a tool called `ansible-vault`
+for encrypting secret variables. while other
 tools are available, the vault is usefully
 integrated.
 
@@ -250,14 +264,14 @@ integrated.
 
 # ansible-vault
 
-* Create: `ansible-vault create secrets.yml`
-* Edit: `ansible-vault edit secrets.yml`
-* View: `ansible-vault view secrets.yml`
-* Encrypt existing file: `ansible-vault encrypt secrets.yml`
-* Decrypt existing file: `ansible-vault encrypt secrets.yml`
-* Change password: `ansible-vault rekey secrets.yml`
+* create: `ansible-vault create secrets.yml`
+* edit: `ansible-vault edit secrets.yml`
+* view: `ansible-vault view secrets.yml`
+* encrypt existing file: `ansible-vault encrypt secrets.yml`
+* decrypt existing file: `ansible-vault encrypt secrets.yml`
+* change password: `ansible-vault rekey secrets.yml`
 
-See more: [Ansible Vault](http://docs.ansible.com/ansible/playbooks_vault.html#running-a-playbook-with-vault)
+see more: [ansible vault](http://docs.ansible.com/ansible/playbooks_vault.html#running-a-playbook-with-vault)
 
 ---
 
@@ -267,8 +281,8 @@ See more: [Ansible Vault](http://docs.ansible.com/ansible/playbooks_vault.html#r
 ansible-playbook playbook.yml --ask-vault-pass
 ```
 
-You can also set the password in a file (e.g. ~/.ansible/vault_pass)
-and use
+you can also set the password in a file (e.g. `~/.ansible/vault_pass`)
+and use:
 
 ```
 ansible-playbook playbook.yml --vault-password-file ~/.ansible/vault_pass
