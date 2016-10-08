@@ -28,15 +28,9 @@
       url: https://github.com/willthames/devops-singapore-2016/archive/master.tar.gz
       dest: /var/tmp/master.tar.gz
       force: yes
-    register: download_resources
+    notify: extract workshop resources
 
-    # Use tar as unarchive module doesn't handle --strip-components=1 correctly
-  - name: extract workshop resources
-    command: tar xzf /var/tmp/master.tar.gz --strip-components=2 devops-singapore-2016-master/ansible
-    args:
-      warn: no
-      chdir: /home/vagrant
-    when: download_resources|changed
+  - meta: flush_handlers
 
   - name: install inventory file
     copy:
@@ -62,3 +56,11 @@
   - name: copy ssh to target VM
     command: sshpass -p vagrant ssh-copy-id -i /home/vagrant/.ssh/ansible {{ target }}
     when: ssh_target|failed
+
+  handlers:
+  # Use tar as unarchive module doesn't handle --strip-components=1 correctly
+  - name: extract workshop resources
+    command: tar xzf /var/tmp/master.tar.gz --strip-components=2 devops-singapore-2016-master/ansible
+    args:
+      warn: no
+      chdir: /home/vagrant
