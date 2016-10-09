@@ -497,11 +497,16 @@ control_path = %(directory)s/ssh-%%h-%%p-%%r</code></pre>
 <ul>
 <li><code>hostfile = ./inventory</code> allows inventory to be stored next to the playbooks it is for</li>
 <li><code>library = ./library</code> allows the easy installation of custom modules near the code (useful if a module is not available from Ansible or a bug has been fixed for a newer/unreleased version)</li>
+</ul>
+</section>
+<section id="configuration-explanation-1" class="slide level1">
+<h1>Configuration explanation</h1>
+<ul>
 <li><code>filter_plugins = ./plugins/filter</code> — allows for addition of new plugins for Jinja templating</li>
 <li><code>callback_whitelist = profile_tasks,timer</code> turns on timing information for individual tasks and for the playbook run as a whole</li>
 </ul>
 </section>
-<section id="configuration-explanation-1" class="slide level1">
+<section id="configuration-explanation-2" class="slide level1">
 <h1>Configuration explanation</h1>
 <ul>
 <li><code>pipelining = True</code> speeds up the execution of modules as ansible only has to run one ssh command, not three.</li>

@@ -162,7 +162,7 @@ git push upstream v2.3
 
 # Lab
 
-Using a [suitable mysql role](https://galaxy.ansible.com/resmo/mysql/)
+Using the [resmo.mysql](https://galaxy.ansible.com/resmo/mysql/)
 from galaxy.ansible.com,
 install and configure a database called catalogue:
 
