@@ -114,7 +114,7 @@ vagrant ssh control
 From the control node, run:
 ```
 ansible -m ping target
-ansible -m command -a whoami -b
+ansible -m command -a whoami -b target
 ```
 
 ### Self installation
@@ -137,5 +137,5 @@ Then the following should work
 
 ```
 ansible -m ping target
-ansible -m command -a whoami -b
+ansible -m command -a whoami -b target
 ```
