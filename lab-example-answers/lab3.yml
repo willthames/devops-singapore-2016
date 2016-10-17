@@ -1,0 +1,10 @@
+- hosts: target
+  become: yes
+
+  roles:
+  - role: resmo.mysql
+    mysql_db:
+    - name: shop
+    mysql_users:
+      - name: shop
+        password: sh0p
